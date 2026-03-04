@@ -1,0 +1,27 @@
+import { apiClient } from './apiClient'
+import type { AssignmentDto, AssignmentDetailDto } from '@/types/dto'
+import type { CreateAssignmentRequest } from '@/types/requests'
+
+export const apiAssignments = {
+  getByClassId: async (classId: string): Promise<AssignmentDto[]> => {
+    const response = await apiClient.get<AssignmentDto[]>(
+      `/v1/classes/${classId}/assignments`,
+    )
+    return response.data
+  },
+
+  getById: async (assignmentId: string): Promise<AssignmentDetailDto> => {
+    const response = await apiClient.get<AssignmentDetailDto>(
+      `/v1/assignments/${assignmentId}`,
+    )
+    return response.data
+  },
+
+  create: async (classId: string, data: CreateAssignmentRequest): Promise<AssignmentDto> => {
+    const response = await apiClient.post<AssignmentDto>(
+      `/v1/classes/${classId}/assignments`,
+      data,
+    )
+    return response.data
+  },
+}
