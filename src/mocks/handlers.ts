@@ -69,6 +69,43 @@ export const handlers = [
     ])
   }),
 
+  http.get(`${BASE_URL}/v1/classes/:classId`, ({ params }) => {
+    const { classId } = params
+    return HttpResponse.json({
+      id: classId,
+      name: 'Math 101',
+      code: 'ABCD1234',
+      myRole: 'OWNER',
+      memberCount: 20,
+      createdAt: '2026-01-15T00:00:00Z',
+    })
+  }),
+
+  http.get(`${BASE_URL}/v1/classes/:classId/members`, () => {
+    return HttpResponse.json([
+      {
+        id: 'mem-1',
+        userId: '1',
+        firstName: 'Ivan',
+        lastName: 'Ivanov',
+        email: 'ivan@test.com',
+        avatarUrl: null,
+        role: 'OWNER',
+        joinedAt: '2026-01-15T00:00:00Z',
+      },
+      {
+        id: 'mem-2',
+        userId: '2',
+        firstName: 'Petr',
+        lastName: 'Petrov',
+        email: 'petr@test.com',
+        avatarUrl: null,
+        role: 'STUDENT',
+        joinedAt: '2026-02-01T00:00:00Z',
+      },
+    ])
+  }),
+
   http.post(`${BASE_URL}/v1/classes`, async () => {
     return HttpResponse.json(
       {
