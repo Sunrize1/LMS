@@ -25,7 +25,7 @@ describe('JoinClassModal', () => {
 
   it('should render modal with code input when open', () => {
     renderModal()
-    expect(screen.getByText(/присоединиться/i)).toBeInTheDocument()
+    expect(screen.getByText(/присоединиться к классу/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/код класса/i)).toBeInTheDocument()
   })
 
