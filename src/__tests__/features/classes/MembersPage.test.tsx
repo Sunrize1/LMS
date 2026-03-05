@@ -6,7 +6,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import MembersPage from '@/pages/MembersPage'
 import { useAuthStore } from '@/store/authStore'
 
-function renderWithProviders(classId = 'cls-1') {
+function renderWithProviders(classId = 'cls-2') {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })

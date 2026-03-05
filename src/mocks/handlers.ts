@@ -71,11 +71,12 @@ export const handlers = [
 
   http.get(`${BASE_URL}/v1/classes/:classId`, ({ params }) => {
     const { classId } = params
+    const myRole = classId === 'cls-1' ? 'STUDENT' : 'OWNER'
     return HttpResponse.json({
       id: classId,
       name: 'Math 101',
       code: 'ABCD1234',
-      myRole: 'OWNER',
+      myRole,
       memberCount: 20,
       createdAt: '2026-01-15T00:00:00Z',
     })
