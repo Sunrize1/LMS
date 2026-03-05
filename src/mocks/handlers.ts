@@ -244,6 +244,32 @@ export const handlers = [
     })
   }),
 
+  http.get(`${BASE_URL}/v1/submissions/:submissionId`, ({ params }) => {
+    return HttpResponse.json({
+      id: params.submissionId,
+      studentId: '3',
+      studentName: 'Student One',
+      answerText: 'My answer text',
+      fileUrl: null,
+      grade: null,
+      submittedAt: '2026-03-01T00:00:00Z',
+      gradedAt: null,
+    })
+  }),
+
+  http.put(`${BASE_URL}/v1/submissions/:submissionId/grade`, async () => {
+    return HttpResponse.json({
+      id: 'sub-1',
+      studentId: '3',
+      studentName: 'Student One',
+      answerText: 'My answer text',
+      fileUrl: null,
+      grade: 90,
+      submittedAt: '2026-03-01T00:00:00Z',
+      gradedAt: '2026-03-04T00:00:00Z',
+    })
+  }),
+
   // Comments
   http.get(`${BASE_URL}/v1/assignments/:assignmentId/comments`, () => {
     return HttpResponse.json([
