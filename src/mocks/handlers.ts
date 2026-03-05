@@ -82,6 +82,21 @@ export const handlers = [
     })
   }),
 
+  http.put(`${BASE_URL}/v1/classes/:classId`, async ({ params }) => {
+    return HttpResponse.json({
+      id: params.classId,
+      name: 'Updated Class',
+      code: 'ABCD1234',
+      myRole: 'OWNER',
+      memberCount: 20,
+      createdAt: '2026-01-15T00:00:00Z',
+    })
+  }),
+
+  http.delete(`${BASE_URL}/v1/classes/:classId`, () => {
+    return new HttpResponse(null, { status: 204 })
+  }),
+
   http.get(`${BASE_URL}/v1/classes/:classId/members`, () => {
     return HttpResponse.json([
       {
