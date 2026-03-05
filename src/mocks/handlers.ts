@@ -106,6 +106,19 @@ export const handlers = [
     ])
   }),
 
+  http.get(`${BASE_URL}/v1/classes/:classId/members/:memberId`, ({ params }) => {
+    return HttpResponse.json({
+      id: params.memberId,
+      userId: '2',
+      firstName: 'Petr',
+      lastName: 'Petrov',
+      email: 'petr@test.com',
+      avatarUrl: null,
+      role: 'STUDENT',
+      joinedAt: '2026-02-01T00:00:00Z',
+    })
+  }),
+
   http.put(`${BASE_URL}/v1/classes/:classId/members/:memberId/role`, async ({ params }) => {
     return HttpResponse.json({
       id: params.memberId,
