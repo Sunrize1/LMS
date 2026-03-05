@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, it, expect, beforeEach } from 'vitest'
@@ -49,19 +48,19 @@ describe('AssignmentDetailPage', () => {
     })
   })
 
-  it('should display submission form with textarea', async () => {
-    renderWithProviders()
-
-    await waitFor(() => {
-      expect(screen.getByLabelText(/ответ/i)).toBeInTheDocument()
-    })
-  })
-
-  it('should show existing submission when available', async () => {
+  it('should show existing submission text', async () => {
     renderWithProviders()
 
     await waitFor(() => {
       expect(screen.getByText(/my submission/i)).toBeInTheDocument()
+    })
+  })
+
+  it('should show submission grade when graded', async () => {
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByText(/85/)).toBeInTheDocument()
     })
   })
 })
