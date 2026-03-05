@@ -175,6 +175,32 @@ export const handlers = [
     ])
   }),
 
+  http.get(`${BASE_URL}/v1/assignments/:assignmentId`, ({ params }) => {
+    return HttpResponse.json({
+      id: params.assignmentId,
+      title: 'Homework 1',
+      description: 'First homework description',
+      createdBy: '1',
+      createdAt: '2026-02-10T00:00:00Z',
+    })
+  }),
+
+  http.post(`${BASE_URL}/v1/assignments/:assignmentId/submissions`, async () => {
+    return HttpResponse.json(
+      {
+        id: 'sub-new',
+        studentId: '1',
+        studentName: 'Ivan Ivanov',
+        answerText: 'My answer',
+        fileUrl: null,
+        grade: null,
+        submittedAt: '2026-03-04T00:00:00Z',
+        gradedAt: null,
+      },
+      { status: 201 },
+    )
+  }),
+
   http.post(`${BASE_URL}/v1/classes/:classId/assignments`, async () => {
     return HttpResponse.json(
       {
