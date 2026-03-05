@@ -106,6 +106,23 @@ export const handlers = [
     ])
   }),
 
+  http.put(`${BASE_URL}/v1/classes/:classId/members/:memberId/role`, async ({ params }) => {
+    return HttpResponse.json({
+      id: params.memberId,
+      userId: '2',
+      firstName: 'Petr',
+      lastName: 'Petrov',
+      email: 'petr@test.com',
+      avatarUrl: null,
+      role: 'TEACHER',
+      joinedAt: '2026-02-01T00:00:00Z',
+    })
+  }),
+
+  http.delete(`${BASE_URL}/v1/classes/:classId/members/:memberId`, () => {
+    return new HttpResponse(null, { status: 204 })
+  }),
+
   http.post(`${BASE_URL}/v1/classes`, async () => {
     return HttpResponse.json(
       {
