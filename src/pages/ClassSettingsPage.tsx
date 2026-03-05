@@ -1,3 +1,75 @@
+import { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
+import { useDeleteClassMutation } from '@/features/classes/hooks/useDeleteClassMutation'
+
 export default function ClassSettingsPage() {
-  return <div>Class Settings Page</div>
+  const { classId } = useParams<{ classId: string }>()
+  const navigate = useNavigate()
+  const { data: classData, isLoading } = useClassQuery(classId!)
+  const { mutate: deleteClass } = useDeleteClassMutation()
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    if (classData?.code) {
+      await navigator.clipboard.writeText(classData.code)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  const handleDelete = () => {
+    if (window.confirm('Вы уверены, что хотите удалить этот класс? Это действие необратимо.')) {
+      deleteClass(classId!, {
+        onSuccess: () => navigate('/classes', { replace: true }),
+      })
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="h-8 w-48 animate-pulse rounded bg-gray-200" />
+        <div className="h-32 animate-pulse rounded-lg bg-gray-200" />
+      </div>
+    )
+  }
+
+  if (!classData) return null
+
+  return (
+    <div className="mx-auto max-w-2xl space-y-8">
+      <h1 className="text-2xl font-bold text-gray-900">Настройки класса</h1>
+
+      {/* Invite code section */}
+      <div className="rounded-lg border border-gray-200 bg-white p-6">
+        <h2 className="mb-3 text-lg font-semibold text-gray-900">Пригласительный код</h2>
+        <div className="flex items-center gap-3">
+          <code className="rounded bg-gray-100 px-4 py-2 font-mono text-lg tracking-widest">
+            {classData.code}
+          </code>
+          <button
+            onClick={handleCopy}
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+          >
+            {copied ? 'Скопировано!' : 'Скопировать'}
+          </button>
+        </div>
+      </div>
+
+      {/* Danger zone */}
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6">
+        <h2 className="mb-3 text-lg font-semibold text-red-900">Опасная зона</h2>
+        <p className="mb-4 text-sm text-red-700">
+          Удаление класса приведёт к потере всех заданий и ответов.
+        </p>
+        <button
+          onClick={handleDelete}
+          className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+        >
+          Удалить класс
+        </button>
+      </div>
+    </div>
+  )
 }
