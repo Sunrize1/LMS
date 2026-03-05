@@ -13,6 +13,7 @@ const ClassListPage = lazy(() => import('@/pages/ClassListPage'))
 const ClassDetailPage = lazy(() => import('@/pages/ClassDetailPage'))
 const ClassSettingsPage = lazy(() => import('@/pages/ClassSettingsPage'))
 const MembersPage = lazy(() => import('@/pages/MembersPage'))
+const MemberProfilePage = lazy(() => import('@/pages/MemberProfilePage'))
 const AssignmentDetailPage = lazy(() => import('@/pages/AssignmentDetailPage'))
 const SubmissionDetailPage = lazy(() => import('@/pages/SubmissionDetailPage'))
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
@@ -102,6 +103,14 @@ export const router = createBrowserRouter([
             element: (
               <LazyPage>
                 <MembersPage />
+              </LazyPage>
+            ),
+          },
+          {
+            path: '/classes/:classId/members/:memberId',
+            element: (
+              <LazyPage>
+                <MemberProfilePage />
               </LazyPage>
             ),
           },
