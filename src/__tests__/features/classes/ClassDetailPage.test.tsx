@@ -6,7 +6,7 @@ import { queryClient } from '@/services/queryClient'
 import { useAuthStore } from '@/store/authStore'
 import ClassDetailPage from '@/pages/ClassDetailPage'
 
-function renderPage(classId = 'cls-1') {
+function renderPage(classId = 'cls-2') {
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[`/classes/${classId}`]}>

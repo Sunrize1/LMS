@@ -1,13 +1,20 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useAssignmentQuery } from '@/features/assignments/hooks/useAssignmentQuery'
 import { useMySubmissionQuery } from '@/features/assignments/hooks/useMySubmissionQuery'
+import { useSubmissionsQuery } from '@/features/assignments/hooks/useSubmissionsQuery'
 import { useSubmitMutation } from '@/features/assignments/hooks/useSubmitMutation'
+import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
 
 export default function AssignmentDetailPage() {
-  const { assignmentId } = useParams<{ classId: string; assignmentId: string }>()
+  const { classId, assignmentId } = useParams<{ classId: string; assignmentId: string }>()
+  const { data: classData } = useClassQuery(classId!)
   const { data: assignment, isLoading: assignmentLoading } = useAssignmentQuery(assignmentId!)
+  const isTeacherOrOwner =
+    classData?.myRole === 'OWNER' || classData?.myRole === 'TEACHER'
+
   const { data: submission, isLoading: submissionLoading } = useMySubmissionQuery(assignmentId!)
+  const { data: submissions } = useSubmissionsQuery(assignmentId!)
   const submitMutation = useSubmitMutation(assignmentId!)
   const [answerText, setAnswerText] = useState('')
 
@@ -36,7 +43,30 @@ export default function AssignmentDetailPage() {
         <p className="mb-6 text-gray-600">{assignment.description}</p>
       )}
 
-      {submission && (
+      {isTeacherOrOwner && submissions && (
+        <div className="mb-6">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Работы студентов</h2>
+          {submissions.length === 0 && (
+            <p className="text-gray-500">Пока нет отправленных работ</p>
+          )}
+          <div className="space-y-2">
+            {submissions.map((sub) => (
+              <Link
+                key={sub.id}
+                to={`/submissions/${sub.id}`}
+                className="flex items-center justify-between rounded-lg border border-gray-200 p-4 hover:bg-gray-50"
+              >
+                <span className="font-medium text-gray-900">{sub.studentName}</span>
+                <span className="text-sm text-gray-500">
+                  {sub.grade !== null ? `Оценка: ${sub.grade}` : 'Не оценено'}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!isTeacherOrOwner && submission && (
         <div className="mb-6 rounded-lg border border-gray-200 p-4">
           <h2 className="mb-2 text-lg font-semibold text-gray-900">Ваш ответ</h2>
           {submission.answerText && (
@@ -48,7 +78,7 @@ export default function AssignmentDetailPage() {
         </div>
       )}
 
-      {!submission && (
+      {!isTeacherOrOwner && !submission && (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="answer" className="mb-1 block text-sm font-medium text-gray-700">
