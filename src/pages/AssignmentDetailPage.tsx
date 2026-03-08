@@ -88,7 +88,7 @@ export default function AssignmentDetailPage() {
               value={answerText}
               onChange={(e) => setAnswerText(e.target.value)}
               rows={4}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               placeholder="Введите ваш ответ..."
             />
           </div>
@@ -102,7 +102,7 @@ export default function AssignmentDetailPage() {
           <button
             type="submit"
             disabled={!answerText.trim() || submitMutation.isPending}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
           >
             {submitMutation.isPending ? 'Отправка...' : 'Отправить'}
           </button>

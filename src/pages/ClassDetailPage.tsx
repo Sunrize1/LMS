@@ -37,7 +37,7 @@ export default function ClassDetailPage() {
         <div className="mb-4">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700"
           >
             Создать задание
           </button>

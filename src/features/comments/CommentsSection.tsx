@@ -35,8 +35,11 @@ export function CommentsSection({ assignmentId }: CommentsSectionProps) {
       {comments && (
         <div className="mb-4 space-y-3">
           {comments.map((comment) => (
-            <div key={comment.id} className="rounded-lg border border-gray-200 p-3">
+            <div key={comment.id} className="rounded-xl border border-gray-200 bg-white p-4">
               <div className="mb-1 flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-600">
+                  {comment.authorName[0]}
+                </div>
                 <span className="text-sm font-medium text-gray-900">
                   {comment.authorName}
                 </span>
@@ -44,7 +47,7 @@ export function CommentsSection({ assignmentId }: CommentsSectionProps) {
                   {new Date(comment.createdAt).toLocaleDateString()}
                 </span>
               </div>
-              <p className="text-sm text-gray-700">{comment.text}</p>
+              <p className="ml-9 text-sm text-gray-700">{comment.text}</p>
             </div>
           ))}
         </div>
@@ -56,12 +59,12 @@ export function CommentsSection({ assignmentId }: CommentsSectionProps) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Написать комментарий..."
-          className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="flex-1 rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
         <button
           type="submit"
           disabled={!text.trim() || addComment.isPending}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-50"
         >
           Отправить
         </button>
