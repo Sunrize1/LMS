@@ -40,6 +40,13 @@ export function AppLayout() {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+            ) : (
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-xs font-semibold text-white">
+                {user?.firstName?.[0]}{user?.lastName?.[0]}
+              </div>
+            )}
             <span className="text-sm text-indigo-100">
               {user?.firstName} {user?.lastName}
             </span>

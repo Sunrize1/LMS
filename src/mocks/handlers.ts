@@ -341,14 +341,15 @@ export const handlers = [
     })
   }),
 
-  http.put(`${BASE_URL}/v1/users/me`, async () => {
+  http.put(`${BASE_URL}/v1/users/me`, async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>
     return HttpResponse.json({
       id: '1',
-      firstName: 'Updated',
-      lastName: 'User',
+      firstName: body.firstName ?? 'Updated',
+      lastName: body.lastName ?? 'User',
       email: 'user@test.com',
-      avatarUrl: null,
-      dateOfBirth: '2000-01-01',
+      avatarUrl: body.avatarUrl ?? null,
+      dateOfBirth: body.dateOfBirth ?? '2000-01-01',
       createdAt: '2026-01-01T00:00:00Z',
     })
   }),
