@@ -31,9 +31,7 @@ export default function AssignmentDetailPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const formData = new FormData()
-    formData.append('answerText', answerText)
-    submitMutation.mutate(formData)
+    submitMutation.mutate({ answerText })
   }
 
   return (

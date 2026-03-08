@@ -27,12 +27,10 @@ export interface ClassDto {
 }
 
 export interface MemberDto {
-  id: string
   userId: string
   firstName: string
   lastName: string
   email: string
-  avatarUrl: string | null
   role: Role
   joinedAt: string
 }
@@ -44,17 +42,21 @@ export interface AssignmentDto {
   id: string
   title: string
   description: string | null
-  createdBy: string
   createdAt: string
   submissionStatus?: SubmissionStatus
+  grade?: number | null
 }
 
 export interface AssignmentDetailDto {
   id: string
+  classId: string
   title: string
   description: string | null
   createdBy: string
+  createdByName: string
   createdAt: string
+  submissionStatus?: SubmissionStatus
+  grade?: number | null
 }
 
 // ── Submission ──────────────────────────────────
@@ -66,17 +68,28 @@ export interface SubmissionDto {
   fileUrl: string | null
   grade: number | null
   submittedAt: string
-  gradedAt: string | null
 }
 
 // ── Comment ─────────────────────────────────────
 export interface CommentDto {
   id: string
+  assignmentId: string
   authorId: string
   authorName: string
-  authorAvatarUrl: string | null
   text: string
   createdAt: string
+}
+
+// ── Pagination ─────────────────────────────────
+export interface Page<T> {
+  content: T[]
+  totalElements: number
+  totalPages: number
+  size: number
+  number: number
+  first: boolean
+  last: boolean
+  empty: boolean
 }
 
 // ── Error ───────────────────────────────────────

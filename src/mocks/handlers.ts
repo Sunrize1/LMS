@@ -1,6 +1,19 @@
 import { http, HttpResponse } from 'msw'
 
-const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = 'http://localhost:8080/api'
+
+function page<T>(content: T[]) {
+  return {
+    content,
+    totalElements: content.length,
+    totalPages: 1,
+    size: 100,
+    number: 0,
+    first: true,
+    last: true,
+    empty: content.length === 0,
+  }
+}
 
 export const handlers = [
   // Auth
@@ -49,24 +62,26 @@ export const handlers = [
 
   // Classes
   http.get(`${BASE_URL}/v1/classes`, () => {
-    return HttpResponse.json([
-      {
-        id: 'cls-1',
-        name: 'Math 101',
-        code: 'ABCD1234',
-        myRole: 'STUDENT',
-        memberCount: 20,
-        createdAt: '2026-01-15T00:00:00Z',
-      },
-      {
-        id: 'cls-2',
-        name: 'Physics 201',
-        code: 'EFGH5678',
-        myRole: 'OWNER',
-        memberCount: 15,
-        createdAt: '2026-02-01T00:00:00Z',
-      },
-    ])
+    return HttpResponse.json(
+      page([
+        {
+          id: 'cls-1',
+          name: 'Math 101',
+          code: 'ABCD1234',
+          myRole: 'STUDENT',
+          memberCount: 20,
+          createdAt: '2026-01-15T00:00:00Z',
+        },
+        {
+          id: 'cls-2',
+          name: 'Physics 201',
+          code: 'EFGH5678',
+          myRole: 'OWNER',
+          memberCount: 15,
+          createdAt: '2026-02-01T00:00:00Z',
+        },
+      ]),
+    )
   }),
 
   http.get(`${BASE_URL}/v1/classes/:classId`, ({ params }) => {
@@ -98,38 +113,34 @@ export const handlers = [
   }),
 
   http.get(`${BASE_URL}/v1/classes/:classId/members`, () => {
-    return HttpResponse.json([
-      {
-        id: 'mem-1',
-        userId: '1',
-        firstName: 'Ivan',
-        lastName: 'Ivanov',
-        email: 'ivan@test.com',
-        avatarUrl: null,
-        role: 'OWNER',
-        joinedAt: '2026-01-15T00:00:00Z',
-      },
-      {
-        id: 'mem-2',
-        userId: '2',
-        firstName: 'Petr',
-        lastName: 'Petrov',
-        email: 'petr@test.com',
-        avatarUrl: null,
-        role: 'STUDENT',
-        joinedAt: '2026-02-01T00:00:00Z',
-      },
-    ])
+    return HttpResponse.json(
+      page([
+        {
+          userId: '1',
+          firstName: 'Ivan',
+          lastName: 'Ivanov',
+          email: 'ivan@test.com',
+          role: 'OWNER',
+          joinedAt: '2026-01-15T00:00:00Z',
+        },
+        {
+          userId: '2',
+          firstName: 'Petr',
+          lastName: 'Petrov',
+          email: 'petr@test.com',
+          role: 'STUDENT',
+          joinedAt: '2026-02-01T00:00:00Z',
+        },
+      ]),
+    )
   }),
 
   http.get(`${BASE_URL}/v1/classes/:classId/members/:memberId`, ({ params }) => {
     return HttpResponse.json({
-      id: params.memberId,
-      userId: '2',
+      userId: params.memberId as string,
       firstName: 'Petr',
       lastName: 'Petrov',
       email: 'petr@test.com',
-      avatarUrl: null,
       role: 'STUDENT',
       joinedAt: '2026-02-01T00:00:00Z',
     })
@@ -137,12 +148,10 @@ export const handlers = [
 
   http.put(`${BASE_URL}/v1/classes/:classId/members/:memberId/role`, async ({ params }) => {
     return HttpResponse.json({
-      id: params.memberId,
-      userId: '2',
+      userId: params.memberId as string,
       firstName: 'Petr',
       lastName: 'Petrov',
       email: 'petr@test.com',
-      avatarUrl: null,
       role: 'TEACHER',
       joinedAt: '2026-02-01T00:00:00Z',
     })
@@ -179,25 +188,31 @@ export const handlers = [
 
   // Assignments
   http.get(`${BASE_URL}/v1/classes/:classId/assignments`, () => {
-    return HttpResponse.json([
-      {
-        id: 'asgn-1',
-        title: 'Homework 1',
-        description: 'First homework',
-        createdBy: '1',
-        createdAt: '2026-02-10T00:00:00Z',
-        submissionStatus: 'NOT_SUBMITTED',
-      },
-    ])
+    return HttpResponse.json(
+      page([
+        {
+          id: 'asgn-1',
+          title: 'Homework 1',
+          description: 'First homework',
+          createdAt: '2026-02-10T00:00:00Z',
+          submissionStatus: 'NOT_SUBMITTED',
+          grade: null,
+        },
+      ]),
+    )
   }),
 
   http.get(`${BASE_URL}/v1/assignments/:assignmentId`, ({ params }) => {
     return HttpResponse.json({
       id: params.assignmentId,
+      classId: 'cls-1',
       title: 'Homework 1',
       description: 'First homework description',
       createdBy: '1',
+      createdByName: 'Ivan Ivanov',
       createdAt: '2026-02-10T00:00:00Z',
+      submissionStatus: 'NOT_SUBMITTED',
+      grade: null,
     })
   }),
 
@@ -211,7 +226,6 @@ export const handlers = [
         fileUrl: null,
         grade: null,
         submittedAt: '2026-03-04T00:00:00Z',
-        gradedAt: null,
       },
       { status: 201 },
     )
@@ -223,8 +237,9 @@ export const handlers = [
         id: 'asgn-2',
         title: 'New Assignment',
         description: '',
-        createdBy: '1',
         createdAt: '2026-03-04T00:00:00Z',
+        submissionStatus: 'NOT_SUBMITTED',
+        grade: null,
       },
       { status: 201 },
     )
@@ -232,18 +247,19 @@ export const handlers = [
 
   // Submissions
   http.get(`${BASE_URL}/v1/assignments/:assignmentId/submissions`, () => {
-    return HttpResponse.json([
-      {
-        id: 'sub-1',
-        studentId: '3',
-        studentName: 'Student One',
-        answerText: 'My answer',
-        fileUrl: null,
-        grade: null,
-        submittedAt: '2026-03-01T00:00:00Z',
-        gradedAt: null,
-      },
-    ])
+    return HttpResponse.json(
+      page([
+        {
+          id: 'sub-1',
+          studentId: '3',
+          studentName: 'Student One',
+          answerText: 'My answer',
+          fileUrl: null,
+          grade: null,
+          submittedAt: '2026-03-01T00:00:00Z',
+        },
+      ]),
+    )
   }),
 
   http.get(`${BASE_URL}/v1/assignments/:assignmentId/submissions/my`, () => {
@@ -255,7 +271,6 @@ export const handlers = [
       fileUrl: null,
       grade: 85,
       submittedAt: '2026-03-01T00:00:00Z',
-      gradedAt: '2026-03-02T00:00:00Z',
     })
   }),
 
@@ -268,7 +283,6 @@ export const handlers = [
       fileUrl: null,
       grade: null,
       submittedAt: '2026-03-01T00:00:00Z',
-      gradedAt: null,
     })
   }),
 
@@ -281,31 +295,32 @@ export const handlers = [
       fileUrl: null,
       grade: 90,
       submittedAt: '2026-03-01T00:00:00Z',
-      gradedAt: '2026-03-04T00:00:00Z',
     })
   }),
 
   // Comments
-  http.get(`${BASE_URL}/v1/assignments/:assignmentId/comments`, () => {
-    return HttpResponse.json([
-      {
-        id: 'cmt-1',
-        authorId: '1',
-        authorName: 'Ivan Ivanov',
-        authorAvatarUrl: null,
-        text: 'Test comment',
-        createdAt: '2026-03-01T12:00:00Z',
-      },
-    ])
+  http.get(`${BASE_URL}/v1/assignments/:assignmentId/comments`, ({ params }) => {
+    return HttpResponse.json(
+      page([
+        {
+          id: 'cmt-1',
+          assignmentId: params.assignmentId as string,
+          authorId: '1',
+          authorName: 'Ivan Ivanov',
+          text: 'Test comment',
+          createdAt: '2026-03-01T12:00:00Z',
+        },
+      ]),
+    )
   }),
 
-  http.post(`${BASE_URL}/v1/assignments/:assignmentId/comments`, async () => {
+  http.post(`${BASE_URL}/v1/assignments/:assignmentId/comments`, async ({ params }) => {
     return HttpResponse.json(
       {
         id: 'cmt-2',
+        assignmentId: params.assignmentId as string,
         authorId: '1',
         authorName: 'Ivan Ivanov',
-        authorAvatarUrl: null,
         text: 'New comment',
         createdAt: '2026-03-04T12:00:00Z',
       },

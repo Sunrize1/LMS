@@ -1,13 +1,14 @@
 import { apiClient } from './apiClient'
-import type { CommentDto } from '@/types/dto'
+import type { CommentDto, Page } from '@/types/dto'
 import type { AddCommentRequest } from '@/types/requests'
 
 export const apiComments = {
   getByAssignmentId: async (assignmentId: string): Promise<CommentDto[]> => {
-    const response = await apiClient.get<CommentDto[]>(
+    const response = await apiClient.get<Page<CommentDto>>(
       `/v1/assignments/${assignmentId}/comments`,
+      { params: { page: 0, size: 100 } },
     )
-    return response.data
+    return response.data.content
   },
 
   add: async (assignmentId: string, data: AddCommentRequest): Promise<CommentDto> => {

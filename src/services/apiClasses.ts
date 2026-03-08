@@ -1,11 +1,13 @@
 import { apiClient } from './apiClient'
-import type { ClassDto } from '@/types/dto'
+import type { ClassDto, Page } from '@/types/dto'
 import type { CreateClassRequest, JoinClassRequest, UpdateClassRequest } from '@/types/requests'
 
 export const apiClasses = {
   getMyClasses: async (): Promise<ClassDto[]> => {
-    const response = await apiClient.get<ClassDto[]>('/v1/classes')
-    return response.data
+    const response = await apiClient.get<Page<ClassDto>>('/v1/classes', {
+      params: { page: 0, size: 100 },
+    })
+    return response.data.content
   },
 
   createClass: async (data: CreateClassRequest): Promise<ClassDto> => {

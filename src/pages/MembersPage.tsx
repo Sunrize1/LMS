@@ -35,7 +35,7 @@ export default function MembersPage() {
       <div className="space-y-2">
         {members?.map((member) => (
           <div
-            key={member.id}
+            key={member.userId}
             className="flex items-center justify-between rounded-lg border border-gray-200 p-4"
           >
             <div className="flex items-center gap-3">
@@ -55,7 +55,7 @@ export default function MembersPage() {
               <RoleBadge role={member.role} />
               {isOwner && member.userId !== currentUser?.id && (
                 <button
-                  onClick={() => removeMember.mutate(member.id)}
+                  onClick={() => removeMember.mutate(member.userId)}
                   className="rounded-md border border-red-300 px-3 py-1 text-sm text-red-600 hover:bg-red-50"
                 >
                   Удалить
