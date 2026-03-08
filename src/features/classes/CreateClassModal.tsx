@@ -56,7 +56,7 @@ export function CreateClassModal({ isOpen, onClose }: CreateClassModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
+        className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Создать класс</h2>
@@ -69,7 +69,7 @@ export function CreateClassModal({ isOpen, onClose }: CreateClassModalProps) {
               id="class-name"
               type="text"
               {...register('name')}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               placeholder="Математика 101"
             />
             {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
@@ -90,7 +90,7 @@ export function CreateClassModal({ isOpen, onClose }: CreateClassModalProps) {
             <button
               type="submit"
               disabled={!isValid || isPending}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-50"
             >
               {isPending ? 'Создание...' : 'Создать'}
             </button>

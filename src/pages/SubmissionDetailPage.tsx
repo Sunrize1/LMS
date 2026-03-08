@@ -40,7 +40,7 @@ export default function SubmissionDetailPage() {
         {submission.fileUrl && (
           <a
             href={submission.fileUrl}
-            className="mt-2 inline-block text-blue-600 hover:underline"
+            className="mt-2 inline-block text-indigo-600 hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -64,7 +64,7 @@ export default function SubmissionDetailPage() {
               max="100"
               value={grade}
               onChange={(e) => setGrade(e.target.value)}
-              className="w-32 rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-32 rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
 
@@ -77,7 +77,7 @@ export default function SubmissionDetailPage() {
           <button
             type="submit"
             disabled={!grade || gradeMutation.isPending}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
           >
             {gradeMutation.isPending ? 'Сохранение...' : 'Поставить оценку'}
           </button>

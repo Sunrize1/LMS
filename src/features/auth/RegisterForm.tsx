@@ -64,7 +64,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             id="firstName"
             type="text"
             {...register('firstName')}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
           {errors.firstName && (
             <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
@@ -79,7 +79,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             id="lastName"
             type="text"
             {...register('lastName')}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
           {errors.lastName && (
             <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
@@ -95,7 +95,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           id="reg-email"
           type="email"
           {...register('email')}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           placeholder="user@example.com"
         />
         {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
@@ -109,7 +109,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           id="reg-password"
           type="password"
           {...register('password')}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           placeholder="Минимум 8 символов"
         />
         {errors.password && (
@@ -128,7 +128,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           id="confirmPassword"
           type="password"
           {...register('confirmPassword')}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
         {errors.confirmPassword && (
           <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
@@ -143,7 +143,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           id="dateOfBirth"
           type="date"
           {...register('dateOfBirth')}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
       </div>
 
@@ -154,14 +154,14 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       <button
         type="submit"
         disabled={!isValid || isPending}
-        className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isPending ? 'Регистрация...' : 'Зарегистрироваться'}
       </button>
 
       <p className="text-center text-sm text-gray-600">
         Уже есть аккаунт?{' '}
-        <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+        <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
           Войти
         </Link>
       </p>

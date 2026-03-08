@@ -32,14 +32,16 @@ export default function MembersPage() {
     <div>
       <h1 className="mb-6 text-2xl font-bold text-gray-900">Участники</h1>
 
-      <div className="space-y-2">
-        {members?.map((member) => (
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        {members?.map((member, idx) => (
           <div
             key={member.userId}
-            className="flex items-center justify-between rounded-lg border border-gray-200 p-4"
+            className={`flex items-center justify-between p-4 ${
+              idx < (members.length - 1) ? 'border-b border-gray-100' : ''
+            }`}
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-gray-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600">
                 {member.firstName[0]}
                 {member.lastName[0]}
               </div>
@@ -56,7 +58,7 @@ export default function MembersPage() {
               {isOwner && member.userId !== currentUser?.id && (
                 <button
                   onClick={() => removeMember.mutate(member.userId)}
-                  className="rounded-md border border-red-300 px-3 py-1 text-sm text-red-600 hover:bg-red-50"
+                  className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
                 >
                   Удалить
                 </button>

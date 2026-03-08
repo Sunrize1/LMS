@@ -46,7 +46,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           type="email"
           data-testid="email"
           {...register('email')}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           placeholder="user@example.com"
         />
         {errors.email && (
@@ -65,7 +65,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           type="password"
           data-testid="password"
           {...register('password')}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           placeholder="••••••••"
         />
         {errors.password && (
@@ -81,14 +81,14 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         type="submit"
         disabled={!isValid || isPending}
         data-testid="login-button"
-        className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isPending ? 'Вход...' : 'Войти'}
       </button>
 
       <p className="text-center text-sm text-gray-600">
         Нет аккаунта?{' '}
-        <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+        <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
           Зарегистрироваться
         </Link>
       </p>
