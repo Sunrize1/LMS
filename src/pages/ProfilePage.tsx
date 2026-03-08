@@ -8,6 +8,7 @@ import { useUpdateProfileMutation } from '@/features/users/hooks/useUpdateProfil
 const schema = z.object({
   firstName: z.string().min(1, 'Имя обязательно'),
   lastName: z.string().min(1, 'Фамилия обязательна'),
+  avatarUrl: z.string().url('Некорректный URL').or(z.literal('')).optional(),
   dateOfBirth: z.string().optional(),
 })
 
@@ -21,12 +22,14 @@ export default function ProfilePage() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       firstName: '',
       lastName: '',
+      avatarUrl: '',
       dateOfBirth: '',
     },
   })
@@ -36,6 +39,7 @@ export default function ProfilePage() {
       reset({
         firstName: profile.firstName,
         lastName: profile.lastName,
+        avatarUrl: profile.avatarUrl || '',
         dateOfBirth: profile.dateOfBirth || '',
       })
     }
@@ -54,7 +58,10 @@ export default function ProfilePage() {
   if (!profile) return null
 
   const onSubmit = (data: FormValues) => {
-    mutate(data)
+    mutate({
+      ...data,
+      avatarUrl: data.avatarUrl || undefined,
+    })
   }
 
   return (
@@ -63,7 +70,15 @@ export default function ProfilePage() {
 
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-6 flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 text-xl font-bold text-indigo-600">
+          {watch('avatarUrl') ? (
+            <img
+              src={watch('avatarUrl')}
+              alt="Аватар"
+              className="h-16 w-16 rounded-full object-cover"
+              onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }}
+            />
+          ) : null}
+          <div className={`flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 text-xl font-bold text-indigo-600 ${watch('avatarUrl') ? 'hidden' : ''}`}>
             {profile.firstName[0]}{profile.lastName[0]}
           </div>
           <div>
@@ -100,6 +115,22 @@ export default function ProfilePage() {
             />
             {errors.lastName && (
               <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="avatarUrl" className="mb-1 block text-sm font-medium text-gray-700">
+              URL аватара
+            </label>
+            <input
+              id="avatarUrl"
+              type="url"
+              {...register('avatarUrl')}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              placeholder="https://example.com/avatar.jpg"
+            />
+            {errors.avatarUrl && (
+              <p className="mt-1 text-sm text-red-600">{errors.avatarUrl.message}</p>
             )}
           </div>
 

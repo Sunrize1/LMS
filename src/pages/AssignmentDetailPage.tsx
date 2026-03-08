@@ -9,17 +9,25 @@ import { CommentsSection } from '@/features/comments/CommentsSection'
 
 export default function AssignmentDetailPage() {
   const { classId, assignmentId } = useParams<{ classId: string; assignmentId: string }>()
-  const { data: classData } = useClassQuery(classId!)
+  const { data: classData, isLoading: classLoading } = useClassQuery(classId!)
   const { data: assignment, isLoading: assignmentLoading } = useAssignmentQuery(assignmentId!)
+
   const isTeacherOrOwner =
     classData?.myRole === 'OWNER' || classData?.myRole === 'TEACHER'
 
-  const { data: submission, isLoading: submissionLoading } = useMySubmissionQuery(assignmentId!)
-  const { data: submissions } = useSubmissionsQuery(assignmentId!)
+  const { data: submissions } = useSubmissionsQuery(
+    assignmentId!,
+    !classLoading && isTeacherOrOwner,
+  )
+  const { data: submission, isLoading: submissionLoading } = useMySubmissionQuery(
+    assignmentId!,
+    !classLoading && !isTeacherOrOwner,
+  )
+
   const submitMutation = useSubmitMutation(assignmentId!)
   const [answerText, setAnswerText] = useState('')
 
-  if (assignmentLoading || submissionLoading) {
+  if (classLoading || assignmentLoading) {
     return (
       <div className="space-y-4">
         <div className="h-8 w-64 animate-pulse rounded bg-gray-200" />
@@ -53,7 +61,7 @@ export default function AssignmentDetailPage() {
               <Link
                 key={sub.id}
                 to={`/submissions/${sub.id}`}
-                className="flex items-center justify-between rounded-lg border border-gray-200 p-4 hover:bg-gray-50"
+                className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 transition hover:border-indigo-200 hover:shadow-md"
               >
                 <span className="font-medium text-gray-900">{sub.studentName}</span>
                 <span className="text-sm text-gray-500">
@@ -65,8 +73,12 @@ export default function AssignmentDetailPage() {
         </div>
       )}
 
-      {!isTeacherOrOwner && submission && (
-        <div className="mb-6 rounded-lg border border-gray-200 p-4">
+      {!isTeacherOrOwner && submissionLoading && (
+        <div className="mb-6 h-24 animate-pulse rounded-lg bg-gray-200" />
+      )}
+
+      {!isTeacherOrOwner && !submissionLoading && submission && (
+        <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4">
           <h2 className="mb-2 text-lg font-semibold text-gray-900">Ваш ответ</h2>
           {submission.answerText && (
             <p className="text-gray-700">{submission.answerText}</p>
@@ -77,7 +89,7 @@ export default function AssignmentDetailPage() {
         </div>
       )}
 
-      {!isTeacherOrOwner && !submission && (
+      {!isTeacherOrOwner && !submissionLoading && !submission && (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="answer" className="mb-1 block text-sm font-medium text-gray-700">
@@ -88,7 +100,7 @@ export default function AssignmentDetailPage() {
               value={answerText}
               onChange={(e) => setAnswerText(e.target.value)}
               rows={4}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               placeholder="Введите ваш ответ..."
             />
           </div>
@@ -102,7 +114,7 @@ export default function AssignmentDetailPage() {
           <button
             type="submit"
             disabled={!answerText.trim() || submitMutation.isPending}
-            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-50"
           >
             {submitMutation.isPending ? 'Отправка...' : 'Отправить'}
           </button>
