@@ -5,6 +5,7 @@ import { useMySubmissionQuery } from '@/features/assignments/hooks/useMySubmissi
 import { useSubmissionsQuery } from '@/features/assignments/hooks/useSubmissionsQuery'
 import { useSubmitMutation } from '@/features/assignments/hooks/useSubmitMutation'
 import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
+import { CommentsSection } from '@/features/comments/CommentsSection'
 
 export default function AssignmentDetailPage() {
   const { classId, assignmentId } = useParams<{ classId: string; assignmentId: string }>()
@@ -107,6 +108,8 @@ export default function AssignmentDetailPage() {
           </button>
         </form>
       )}
+
+      <CommentsSection assignmentId={assignmentId!} />
     </div>
   )
 }
