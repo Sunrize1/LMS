@@ -17,8 +17,8 @@ export interface RegisterRequest {
 export interface UpdateProfileRequest {
   firstName: string
   lastName: string
+  avatarUrl?: string
   dateOfBirth?: string
-  avatarBase64?: string
 }
 
 // ── Class ───────────────────────────────────────

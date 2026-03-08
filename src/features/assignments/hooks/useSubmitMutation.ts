@@ -8,7 +8,8 @@ export function useSubmitMutation(assignmentId: string) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const mutation = useMutation({
-    mutationFn: (formData: FormData) => apiSubmissions.submit(assignmentId, formData),
+    mutationFn: ({ answerText, file }: { answerText: string; file?: File }) =>
+      apiSubmissions.submit(assignmentId, answerText, file),
     onSuccess: () => {
       setErrorMessage(null)
       queryClient.invalidateQueries({ queryKey: ['submission', 'my', assignmentId] })
