@@ -58,4 +58,34 @@ describe('SubmissionDetailPage', () => {
       expect(screen.getByLabelText(/оценка/i)).toBeInTheDocument()
     })
   })
+
+  it('should display back navigation button', async () => {
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByText(/назад к заданию/i)).toBeInTheDocument()
+    })
+  })
+
+  it('should display submitted date', async () => {
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByText(/отправлено/i)).toBeInTheDocument()
+    })
+  })
+
+  it('should allow entering a grade value', async () => {
+    const user = userEvent.setup()
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/оценка/i)).toBeInTheDocument()
+    })
+
+    await user.type(screen.getByLabelText(/оценка/i), '90')
+
+    const submitButton = screen.getByRole('button', { name: /поставить оценку/i })
+    expect(submitButton).toBeEnabled()
+  })
 })

@@ -56,4 +56,13 @@ describe('CommentsSection', () => {
 
     expect(screen.getByRole('button', { name: /отправить/i })).toBeDisabled()
   })
+
+  it('should display two-letter initials for comment authors', async () => {
+    renderWithProviders()
+
+    await waitFor(() => {
+      // "Ivan Ivanov" should produce "II"
+      expect(screen.getByText('II')).toBeInTheDocument()
+    })
+  })
 })

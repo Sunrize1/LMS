@@ -1,20 +1,36 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
+import { useUpdateClassMutation } from '@/features/classes/hooks/useUpdateClassMutation'
 import { useDeleteClassMutation } from '@/features/classes/hooks/useDeleteClassMutation'
 
 export default function ClassSettingsPage() {
   const { classId } = useParams<{ classId: string }>()
   const navigate = useNavigate()
   const { data: classData, isLoading } = useClassQuery(classId!)
+  const updateClass = useUpdateClassMutation(classId!)
   const { mutate: deleteClass } = useDeleteClassMutation()
   const [copied, setCopied] = useState(false)
+  const [className, setClassName] = useState('')
+
+  useEffect(() => {
+    if (classData?.name) {
+      setClassName(classData.name)
+    }
+  }, [classData?.name])
 
   const handleCopy = async () => {
     if (classData?.code) {
       await navigator.clipboard.writeText(classData.code)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  const handleRename = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (className.trim()) {
+      updateClass.mutate({ name: className.trim() })
     }
   }
 
@@ -41,8 +57,39 @@ export default function ClassSettingsPage() {
     <div className="mx-auto max-w-2xl space-y-8">
       <h1 className="text-2xl font-bold text-gray-900">Настройки класса</h1>
 
+      {/* Rename section */}
+      <div className="rounded-xl border border-gray-200 bg-white p-6">
+        <h2 className="mb-3 text-lg font-semibold text-gray-900">Название класса</h2>
+        <form onSubmit={handleRename} className="flex items-end gap-3">
+          <div className="flex-1">
+            <label htmlFor="className" className="mb-1 block text-sm font-medium text-gray-700">
+              Название
+            </label>
+            <input
+              id="className"
+              type="text"
+              value={className}
+              onChange={(e) => setClassName(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={!className.trim() || updateClass.isPending}
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-50"
+          >
+            {updateClass.isPending ? 'Сохранение...' : 'Сохранить'}
+          </button>
+        </form>
+        {updateClass.errorMessage && (
+          <p className="mt-2 rounded-md bg-red-50 p-3 text-sm text-red-600">
+            {updateClass.errorMessage}
+          </p>
+        )}
+      </div>
+
       {/* Invite code section */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
+      <div className="rounded-xl border border-gray-200 bg-white p-6">
         <h2 className="mb-3 text-lg font-semibold text-gray-900">Пригласительный код</h2>
         <div className="flex items-center gap-3">
           <code className="rounded bg-gray-100 px-4 py-2 font-mono text-lg tracking-widest">
@@ -58,7 +105,7 @@ export default function ClassSettingsPage() {
       </div>
 
       {/* Danger zone */}
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-6">
         <h2 className="mb-3 text-lg font-semibold text-red-900">Опасная зона</h2>
         <p className="mb-4 text-sm text-red-700">
           Удаление класса приведёт к потере всех заданий и ответов.

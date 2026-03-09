@@ -42,6 +42,7 @@ export interface AssignmentDto {
   id: string
   title: string
   description: string | null
+  deadline: string | null
   createdAt: string
   submissionStatus?: SubmissionStatus
   grade?: number | null
@@ -52,6 +53,7 @@ export interface AssignmentDetailDto {
   classId: string
   title: string
   description: string | null
+  deadline: string | null
   createdBy: string
   createdByName: string
   createdAt: string

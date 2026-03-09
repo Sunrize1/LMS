@@ -194,6 +194,7 @@ export const handlers = [
           id: 'asgn-1',
           title: 'Homework 1',
           description: 'First homework',
+          deadline: '2026-12-31T23:59:00Z',
           createdAt: '2026-02-10T00:00:00Z',
           submissionStatus: 'NOT_SUBMITTED',
           grade: null,
@@ -208,6 +209,7 @@ export const handlers = [
       classId: 'cls-1',
       title: 'Homework 1',
       description: 'First homework description',
+      deadline: '2026-12-31T23:59:00Z',
       createdBy: '1',
       createdByName: 'Ivan Ivanov',
       createdAt: '2026-02-10T00:00:00Z',
@@ -237,6 +239,7 @@ export const handlers = [
         id: 'asgn-2',
         title: 'New Assignment',
         description: '',
+        deadline: null,
         createdAt: '2026-03-04T00:00:00Z',
         submissionStatus: 'NOT_SUBMITTED',
         grade: null,
@@ -272,6 +275,10 @@ export const handlers = [
       grade: 85,
       submittedAt: '2026-03-01T00:00:00Z',
     })
+  }),
+
+  http.delete(`${BASE_URL}/v1/assignments/:assignmentId/submissions/my`, () => {
+    return new HttpResponse(null, { status: 204 })
   }),
 
   http.get(`${BASE_URL}/v1/submissions/:submissionId`, ({ params }) => {

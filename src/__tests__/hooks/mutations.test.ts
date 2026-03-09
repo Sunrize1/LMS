@@ -5,6 +5,7 @@ import { useAssignRoleMutation } from '@/features/classes/hooks/useAssignRoleMut
 import { useUpdateClassMutation } from '@/features/classes/hooks/useUpdateClassMutation'
 import { useRemoveMemberMutation } from '@/features/classes/hooks/useRemoveMemberMutation'
 import { useSubmitMutation } from '@/features/assignments/hooks/useSubmitMutation'
+import { useCancelSubmissionMutation } from '@/features/assignments/hooks/useCancelSubmissionMutation'
 import { useGradeMutation } from '@/features/submissions/hooks/useGradeMutation'
 import { useAddCommentMutation } from '@/features/comments/hooks/useAddCommentMutation'
 import { useUpdateProfileMutation } from '@/features/users/hooks/useUpdateProfileMutation'
@@ -73,9 +74,19 @@ describe('Mutation hooks', () => {
       wrapper: createWrapper(),
     })
 
-    const formData = new FormData()
-    formData.append('answerText', 'test answer')
-    result.current.mutate(formData)
+    result.current.mutate({ answerText: 'test answer' })
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
+  })
+
+  it('useCancelSubmissionMutation should cancel submission', async () => {
+    const { result } = renderHook(() => useCancelSubmissionMutation('asgn-1'), {
+      wrapper: createWrapper(),
+    })
+
+    result.current.mutate()
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true)

@@ -38,6 +38,7 @@ export interface UpdateClassRequest {
 export interface CreateAssignmentRequest {
   title: string
   description?: string
+  deadline?: string
 }
 
 // ── Submission ──────────────────────────────────

@@ -1,19 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiSubmissions } from '@/services/apiSubmissions'
-import type { GradeRequest } from '@/types/requests'
 import { handleApiError } from '@/utils/handleApiError'
 import { useState } from 'react'
 
-export function useGradeMutation(submissionId: string) {
+export function useCancelSubmissionMutation(assignmentId: string) {
   const queryClient = useQueryClient()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const mutation = useMutation({
-    mutationFn: (data: GradeRequest) => apiSubmissions.grade(submissionId, data),
+    mutationFn: () => apiSubmissions.cancelMy(assignmentId),
     onSuccess: () => {
       setErrorMessage(null)
-      queryClient.invalidateQueries({ queryKey: ['submission', submissionId] })
-      queryClient.invalidateQueries({ queryKey: ['submissions'] })
+      queryClient.invalidateQueries({ queryKey: ['submission', 'my', assignmentId] })
     },
     onError: (error) => {
       setErrorMessage(handleApiError(error))

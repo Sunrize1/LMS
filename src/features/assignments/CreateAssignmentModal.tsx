@@ -7,6 +7,7 @@ import { useCreateAssignmentMutation } from './hooks/useCreateAssignmentMutation
 const schema = z.object({
   title: z.string().min(1, 'Название обязательно').max(255),
   description: z.string().optional(),
+  deadline: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -47,7 +48,11 @@ export function CreateAssignmentModal({ isOpen, onClose, classId }: CreateAssign
   if (!isOpen) return null
 
   const onSubmit = (data: FormValues) => {
-    mutate(data, {
+    const payload = {
+      ...data,
+      deadline: data.deadline ? new Date(data.deadline).toISOString() : undefined,
+    }
+    mutate(payload, {
       onSuccess: () => {
         reset()
         onClose()
@@ -87,6 +92,18 @@ export function CreateAssignmentModal({ isOpen, onClose, classId }: CreateAssign
               rows={3}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               placeholder="Описание задания (необязательно)"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="assignment-deadline" className="mb-1 block text-sm font-medium text-gray-700">
+              Дедлайн
+            </label>
+            <input
+              id="assignment-deadline"
+              type="datetime-local"
+              {...register('deadline')}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
 
