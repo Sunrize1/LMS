@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useMembersQuery } from '@/features/classes/hooks/useMembersQuery'
 import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
 import { useRemoveMemberMutation } from '@/features/classes/hooks/useRemoveMemberMutation'
+import { useAssignRoleMutation } from '@/features/classes/hooks/useAssignRoleMutation'
 import { useAuthStore } from '@/store/authStore'
 import { RoleBadge } from '@/components/RoleBadge'
 
@@ -10,6 +11,7 @@ export default function MembersPage() {
   const { data: classData } = useClassQuery(classId!)
   const { data: members, isLoading } = useMembersQuery(classId!)
   const removeMember = useRemoveMemberMutation(classId!)
+  const assignRole = useAssignRoleMutation(classId!)
   const currentUser = useAuthStore((s) => s.user)
 
   const isOwner = classData?.myRole === 'OWNER'
@@ -54,7 +56,24 @@ export default function MembersPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <RoleBadge role={member.role} />
+              {isOwner && member.userId !== currentUser?.id && member.role !== 'OWNER' ? (
+                <select
+                  value={member.role}
+                  onChange={(e) =>
+                    assignRole.mutate({
+                      memberId: member.userId,
+                      role: e.target.value as 'TEACHER' | 'STUDENT',
+                    })
+                  }
+                  className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  aria-label={`Роль ${member.firstName} ${member.lastName}`}
+                >
+                  <option value="STUDENT">STUDENT</option>
+                  <option value="TEACHER">TEACHER</option>
+                </select>
+              ) : (
+                <RoleBadge role={member.role} />
+              )}
               {isOwner && member.userId !== currentUser?.id && (
                 <button
                   onClick={() => removeMember.mutate(member.userId)}

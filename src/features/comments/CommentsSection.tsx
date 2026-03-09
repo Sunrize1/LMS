@@ -38,7 +38,7 @@ export function CommentsSection({ assignmentId }: CommentsSectionProps) {
             <div key={comment.id} className="rounded-xl border border-gray-200 bg-white p-4">
               <div className="mb-1 flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-600">
-                  {comment.authorName[0]}
+                  {comment.authorName.split(' ').map(p => p[0]).join('').slice(0, 2)}
                 </div>
                 <span className="text-sm font-medium text-gray-900">
                   {comment.authorName}

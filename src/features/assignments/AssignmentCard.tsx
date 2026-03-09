@@ -30,6 +30,11 @@ export function AssignmentCard({ assignment, classId }: AssignmentCardProps) {
         {assignment.description && (
           <p className="mt-1 text-sm text-gray-500 line-clamp-2">{assignment.description}</p>
         )}
+        {assignment.deadline && (
+          <p className={`mt-1 text-xs ${new Date(assignment.deadline) < new Date() ? 'text-red-500' : 'text-gray-400'}`}>
+            Дедлайн: {new Date(assignment.deadline).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+          </p>
+        )}
       </div>
     </Link>
   )

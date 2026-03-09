@@ -35,6 +35,10 @@ export const apiSubmissions = {
     return response.data
   },
 
+  cancelMy: async (assignmentId: string): Promise<void> => {
+    await apiClient.delete(`/v1/assignments/${assignmentId}/submissions/my`)
+  },
+
   grade: async (submissionId: string, data: GradeRequest): Promise<SubmissionDto> => {
     const response = await apiClient.put<SubmissionDto>(
       `/v1/submissions/${submissionId}/grade`,

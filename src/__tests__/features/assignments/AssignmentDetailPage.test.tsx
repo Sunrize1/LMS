@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, it, expect, beforeEach } from 'vitest'
+import { http, HttpResponse } from 'msw'
+import { server } from '@/mocks/server'
 import AssignmentDetailPage from '@/pages/AssignmentDetailPage'
 import { useAuthStore } from '@/store/authStore'
 
@@ -62,5 +64,73 @@ describe('AssignmentDetailPage', () => {
     await waitFor(() => {
       expect(screen.getByText(/85/)).toBeInTheDocument()
     })
+  })
+
+  it('should display deadline when set', async () => {
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByText(/дедлайн/i)).toBeInTheDocument()
+    })
+  })
+
+  it('should show file input in submission form when no submission exists', async () => {
+    server.use(
+      http.get('http://localhost:8080/api/v1/assignments/:assignmentId/submissions/my', () => {
+        return new HttpResponse(null, { status: 404 })
+      }),
+    )
+
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/прикрепить файл/i)).toBeInTheDocument()
+    })
+  })
+
+  it('should show answer textarea when no submission exists', async () => {
+    server.use(
+      http.get('http://localhost:8080/api/v1/assignments/:assignmentId/submissions/my', () => {
+        return new HttpResponse(null, { status: 404 })
+      }),
+    )
+
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/ответ/i)).toBeInTheDocument()
+    })
+  })
+
+  it('should show cancel button for ungraded submission', async () => {
+    server.use(
+      http.get('http://localhost:8080/api/v1/assignments/:assignmentId/submissions/my', () => {
+        return HttpResponse.json({
+          id: 'sub-2',
+          studentId: '1',
+          studentName: 'Ivan Ivanov',
+          answerText: 'My submission',
+          fileUrl: null,
+          grade: null,
+          submittedAt: '2026-03-01T00:00:00Z',
+        })
+      }),
+    )
+
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /отменить отправку/i })).toBeInTheDocument()
+    })
+  })
+
+  it('should not show cancel button for graded submission', async () => {
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByText(/my submission/i)).toBeInTheDocument()
+    })
+
+    expect(screen.queryByRole('button', { name: /отменить отправку/i })).not.toBeInTheDocument()
   })
 })

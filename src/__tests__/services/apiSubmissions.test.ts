@@ -17,4 +17,8 @@ describe('apiSubmissions', () => {
     expect(result.studentName).toBe('Ivan Ivanov')
     expect(result.grade).toBe(85)
   })
+
+  it('should cancel my submission', async () => {
+    await expect(apiSubmissions.cancelMy('asgn-1')).resolves.toBeUndefined()
+  })
 })

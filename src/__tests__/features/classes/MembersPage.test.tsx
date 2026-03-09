@@ -44,12 +44,11 @@ describe('MembersPage', () => {
     })
   })
 
-  it('should display role badges for members', async () => {
+  it('should display OWNER role badge for owner member', async () => {
     renderWithProviders()
 
     await waitFor(() => {
       expect(screen.getByText('OWNER')).toBeInTheDocument()
-      expect(screen.getByText('STUDENT')).toBeInTheDocument()
     })
   })
 
@@ -74,5 +73,39 @@ describe('MembersPage', () => {
       const removeButtons = screen.getAllByRole('button', { name: /удалить/i })
       expect(removeButtons.length).toBe(1) // only for Petr, not for self
     })
+  })
+
+  it('should show role select dropdown for non-owner, non-self members', async () => {
+    renderWithProviders()
+
+    await waitFor(() => {
+      const roleSelect = screen.getByLabelText(/роль petr petrov/i)
+      expect(roleSelect).toBeInTheDocument()
+      expect(roleSelect).toHaveValue('STUDENT')
+    })
+  })
+
+  it('should not show role select for OWNER member (self)', async () => {
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByText('Ivan Ivanov')).toBeInTheDocument()
+    })
+
+    expect(screen.queryByLabelText(/роль ivan ivanov/i)).not.toBeInTheDocument()
+  })
+
+  it('should allow changing role via dropdown', async () => {
+    const user = userEvent.setup()
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/роль petr petrov/i)).toBeInTheDocument()
+    })
+
+    await user.selectOptions(screen.getByLabelText(/роль petr petrov/i), 'TEACHER')
+
+    // Mutation fires — verify select can be interacted with
+    expect(screen.getByLabelText(/роль petr petrov/i)).toBeInTheDocument()
   })
 })

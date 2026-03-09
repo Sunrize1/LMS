@@ -39,6 +39,11 @@ describe('CreateAssignmentModal', () => {
     expect(screen.getByRole('button', { name: /создать$/i })).toBeDisabled()
   })
 
+  it('should have optional deadline field', () => {
+    renderModal()
+    expect(screen.getByLabelText(/дедлайн/i)).toBeInTheDocument()
+  })
+
   it('should call onClose after successful creation', async () => {
     const user = userEvent.setup()
     const onClose = vi.fn()

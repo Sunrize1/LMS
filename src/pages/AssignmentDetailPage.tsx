@@ -4,8 +4,20 @@ import { useAssignmentQuery } from '@/features/assignments/hooks/useAssignmentQu
 import { useMySubmissionQuery } from '@/features/assignments/hooks/useMySubmissionQuery'
 import { useSubmissionsQuery } from '@/features/assignments/hooks/useSubmissionsQuery'
 import { useSubmitMutation } from '@/features/assignments/hooks/useSubmitMutation'
+import { useCancelSubmissionMutation } from '@/features/assignments/hooks/useCancelSubmissionMutation'
 import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
 import { CommentsSection } from '@/features/comments/CommentsSection'
+
+function formatDeadline(deadline: string): string {
+  const d = new Date(deadline)
+  return d.toLocaleString('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 
 export default function AssignmentDetailPage() {
   const { classId, assignmentId } = useParams<{ classId: string; assignmentId: string }>()
@@ -25,7 +37,9 @@ export default function AssignmentDetailPage() {
   )
 
   const submitMutation = useSubmitMutation(assignmentId!)
+  const cancelMutation = useCancelSubmissionMutation(assignmentId!)
   const [answerText, setAnswerText] = useState('')
+  const [file, setFile] = useState<File | null>(null)
 
   if (classLoading || assignmentLoading) {
     return (
@@ -38,17 +52,38 @@ export default function AssignmentDetailPage() {
 
   if (!assignment) return null
 
+  const deadlinePassed = assignment.deadline
+    ? new Date(assignment.deadline) < new Date()
+    : false
+
+  const canCancel = submission && submission.grade === null && !deadlinePassed
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    submitMutation.mutate({ answerText })
+    submitMutation.mutate({ answerText, file: file ?? undefined })
+  }
+
+  const handleCancel = () => {
+    if (window.confirm('Вы уверены, что хотите отменить отправку?')) {
+      cancelMutation.mutate()
+    }
   }
 
   return (
     <div>
       <h1 className="mb-2 text-2xl font-bold text-gray-900">{assignment.title}</h1>
       {assignment.description && (
-        <p className="mb-6 text-gray-600">{assignment.description}</p>
+        <p className="mb-2 text-gray-600">{assignment.description}</p>
       )}
+
+      {assignment.deadline && (
+        <p className={`mb-6 text-sm ${deadlinePassed ? 'font-medium text-red-600' : 'text-gray-500'}`}>
+          Дедлайн: {formatDeadline(assignment.deadline)}
+          {deadlinePassed && ' (просрочено)'}
+        </p>
+      )}
+
+      {!assignment.deadline && <div className="mb-4" />}
 
       {isTeacherOrOwner && submissions && (
         <div className="mb-6">
@@ -83,41 +118,86 @@ export default function AssignmentDetailPage() {
           {submission.answerText && (
             <p className="text-gray-700">{submission.answerText}</p>
           )}
+          {submission.fileUrl && (
+            <a
+              href={submission.fileUrl}
+              className="mt-2 inline-block text-sm text-indigo-600 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Скачать файл
+            </a>
+          )}
           {submission.grade !== null && (
             <p className="mt-2 font-medium text-green-600">Оценка: {submission.grade}</p>
+          )}
+
+          {canCancel && (
+            <div className="mt-3 border-t border-gray-100 pt-3">
+              <button
+                onClick={handleCancel}
+                disabled={cancelMutation.isPending}
+                className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+              >
+                {cancelMutation.isPending ? 'Отмена...' : 'Отменить отправку'}
+              </button>
+              {cancelMutation.errorMessage && (
+                <p className="mt-2 text-sm text-red-600">{cancelMutation.errorMessage}</p>
+              )}
+            </div>
           )}
         </div>
       )}
 
       {!isTeacherOrOwner && !submissionLoading && !submission && (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="answer" className="mb-1 block text-sm font-medium text-gray-700">
-              Ответ
-            </label>
-            <textarea
-              id="answer"
-              value={answerText}
-              onChange={(e) => setAnswerText(e.target.value)}
-              rows={4}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              placeholder="Введите ваш ответ..."
-            />
-          </div>
-
-          {submitMutation.errorMessage && (
-            <p className="rounded-md bg-red-50 p-3 text-sm text-red-600">
-              {submitMutation.errorMessage}
+          {deadlinePassed ? (
+            <p className="rounded-md bg-red-50 p-3 text-sm font-medium text-red-600">
+              Дедлайн прошёл. Сдача ответа невозможна.
             </p>
-          )}
+          ) : (
+            <>
+              <div>
+                <label htmlFor="answer" className="mb-1 block text-sm font-medium text-gray-700">
+                  Ответ
+                </label>
+                <textarea
+                  id="answer"
+                  value={answerText}
+                  onChange={(e) => setAnswerText(e.target.value)}
+                  rows={4}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  placeholder="Введите ваш ответ..."
+                />
+              </div>
 
-          <button
-            type="submit"
-            disabled={!answerText.trim() || submitMutation.isPending}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-50"
-          >
-            {submitMutation.isPending ? 'Отправка...' : 'Отправить'}
-          </button>
+              <div>
+                <label htmlFor="file" className="mb-1 block text-sm font-medium text-gray-700">
+                  Прикрепить файл
+                </label>
+                <input
+                  id="file"
+                  type="file"
+                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                  className="w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-600 hover:file:bg-indigo-100"
+                />
+              </div>
+
+              {submitMutation.errorMessage && (
+                <p className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+                  {submitMutation.errorMessage}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={!answerText.trim() || submitMutation.isPending}
+                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-50"
+              >
+                {submitMutation.isPending ? 'Отправка...' : 'Отправить'}
+              </button>
+            </>
+          )}
         </form>
       )}
 

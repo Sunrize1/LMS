@@ -61,4 +61,39 @@ describe('ClassSettingsPage', () => {
 
     expect(screen.getByRole('button', { name: /удалить класс/i })).toBeInTheDocument()
   })
+
+  it('should show class name input pre-filled with current name', async () => {
+    renderPage()
+
+    await waitFor(() => {
+      const input = screen.getByLabelText(/название/i)
+      expect(input).toHaveValue('Math 101')
+    })
+  })
+
+  it('should have a save button for class name', async () => {
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/название/i)).toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('button', { name: /сохранить/i })).toBeInTheDocument()
+  })
+
+  it('should allow updating class name', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/название/i)).toHaveValue('Math 101')
+    })
+
+    const input = screen.getByLabelText(/название/i)
+    await user.clear(input)
+    await user.type(input, 'Updated Math')
+
+    expect(input).toHaveValue('Updated Math')
+    expect(screen.getByRole('button', { name: /сохранить/i })).toBeEnabled()
+  })
 })

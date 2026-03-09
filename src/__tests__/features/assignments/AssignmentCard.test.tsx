@@ -8,6 +8,7 @@ const mockAssignment: AssignmentDto = {
   id: 'asgn-1',
   title: 'Homework 1',
   description: 'First homework',
+  deadline: null,
   createdAt: '2026-02-10T00:00:00Z',
   submissionStatus: 'NOT_SUBMITTED',
   grade: null,
