@@ -3,8 +3,6 @@ import type { SubmissionDto, Page } from '@/types/dto'
 import type { GradeRequest } from '@/types/requests'
 
 export interface SubmissionsParams {
-  page?: number
-  size?: number
   graded?: boolean
 }
 
@@ -12,13 +10,13 @@ export const apiSubmissions = {
   getByAssignmentId: async (
     assignmentId: string,
     params: SubmissionsParams = {},
-  ): Promise<Page<SubmissionDto>> => {
-    const { page = 0, size = 10, graded } = params
+  ): Promise<SubmissionDto[]> => {
+    const { graded } = params
     const response = await apiClient.get<Page<SubmissionDto>>(
       `/v1/assignments/${assignmentId}/submissions`,
-      { params: { page, size, ...(graded !== undefined && { graded }) } },
+      { params: { page: 0, size: 100, ...(graded !== undefined && { graded }) } },
     )
-    return response.data
+    return response.data.content
   },
 
   getMy: async (assignmentId: string): Promise<SubmissionDto> => {
