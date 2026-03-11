@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, it, expect, beforeEach } from 'vitest'
@@ -61,5 +62,30 @@ describe('AssignmentDetailPage (teacher view)', () => {
     await waitFor(() => {
       expect(screen.getByText(/работы студентов/i)).toBeInTheDocument()
     })
+  })
+
+  it('should show grade filter buttons', async () => {
+    renderWithProviders('cls-2')
+
+    await waitFor(() => {
+      expect(screen.getByText(/работы студентов/i)).toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('button', { name: 'Все' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Оценённые' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Не оценённые' })).toBeInTheDocument()
+  })
+
+  it('should switch active filter on click', async () => {
+    const user = userEvent.setup()
+    renderWithProviders('cls-2')
+
+    await waitFor(() => {
+      expect(screen.getByText(/работы студентов/i)).toBeInTheDocument()
+    })
+
+    const gradedBtn = screen.getByRole('button', { name: 'Оценённые' })
+    await user.click(gradedBtn)
+    expect(gradedBtn.className).toContain('bg-indigo-600')
   })
 })

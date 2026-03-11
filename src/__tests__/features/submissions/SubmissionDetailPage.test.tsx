@@ -5,15 +5,28 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, it, expect, beforeEach } from 'vitest'
 import SubmissionDetailPage from '@/pages/SubmissionDetailPage'
 import { useAuthStore } from '@/store/authStore'
+import type { SubmissionDto } from '@/types/dto'
 
-function renderWithProviders(submissionId = 'sub-1') {
+const mockSubmission: SubmissionDto = {
+  id: 'sub-1',
+  studentId: '3',
+  studentName: 'Student One',
+  answerText: 'My answer text',
+  fileUrl: null,
+  grade: null,
+  submittedAt: '2026-03-01T00:00:00Z',
+}
+
+function renderWithProviders(state?: SubmissionDto) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[`/submissions/${submissionId}`]}>
+      <MemoryRouter
+        initialEntries={[{ pathname: '/submissions/sub-1', state: state }]}
+      >
         <Routes>
           <Route path="/submissions/:submissionId" element={<SubmissionDetailPage />} />
         </Routes>
@@ -35,57 +48,48 @@ describe('SubmissionDetailPage', () => {
     })
   })
 
-  it('should display student name', async () => {
-    renderWithProviders()
-
-    await waitFor(() => {
-      expect(screen.getByText(/student one/i)).toBeInTheDocument()
-    })
+  it('should display student name', () => {
+    renderWithProviders(mockSubmission)
+    expect(screen.getByText(/student one/i)).toBeInTheDocument()
   })
 
-  it('should display answer text', async () => {
-    renderWithProviders()
-
-    await waitFor(() => {
-      expect(screen.getByText(/my answer text/i)).toBeInTheDocument()
-    })
+  it('should display answer text', () => {
+    renderWithProviders(mockSubmission)
+    expect(screen.getByText(/my answer text/i)).toBeInTheDocument()
   })
 
-  it('should show grade input for teacher', async () => {
-    renderWithProviders()
-
-    await waitFor(() => {
-      expect(screen.getByLabelText(/оценка/i)).toBeInTheDocument()
-    })
+  it('should show grade input for ungraded submission', () => {
+    renderWithProviders(mockSubmission)
+    expect(screen.getByLabelText(/оценка/i)).toBeInTheDocument()
   })
 
-  it('should display back navigation button', async () => {
-    renderWithProviders()
-
-    await waitFor(() => {
-      expect(screen.getByText(/назад к заданию/i)).toBeInTheDocument()
-    })
+  it('should display back navigation button', () => {
+    renderWithProviders(mockSubmission)
+    expect(screen.getByText(/назад к заданию/i)).toBeInTheDocument()
   })
 
-  it('should display submitted date', async () => {
-    renderWithProviders()
-
-    await waitFor(() => {
-      expect(screen.getByText(/отправлено/i)).toBeInTheDocument()
-    })
+  it('should display submitted date', () => {
+    renderWithProviders(mockSubmission)
+    expect(screen.getByText(/отправлено/i)).toBeInTheDocument()
   })
 
   it('should allow entering a grade value', async () => {
     const user = userEvent.setup()
-    renderWithProviders()
-
-    await waitFor(() => {
-      expect(screen.getByLabelText(/оценка/i)).toBeInTheDocument()
-    })
+    renderWithProviders(mockSubmission)
 
     await user.type(screen.getByLabelText(/оценка/i), '90')
 
     const submitButton = screen.getByRole('button', { name: /поставить оценку/i })
     expect(submitButton).toBeEnabled()
+  })
+
+  it('should show fallback when no state is passed', () => {
+    renderWithProviders()
+    expect(screen.getByText(/данные ответа не найдены/i)).toBeInTheDocument()
+  })
+
+  it('should display grade when submission is graded', () => {
+    renderWithProviders({ ...mockSubmission, grade: 85 })
+    expect(screen.getByText(/оценка: 85/i)).toBeInTheDocument()
   })
 })

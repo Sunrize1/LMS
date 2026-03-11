@@ -1,10 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
-import { apiSubmissions } from '@/services/apiSubmissions'
+import { apiSubmissions, type SubmissionsParams } from '@/services/apiSubmissions'
 
-export function useSubmissionsQuery(assignmentId: string, enabled = true) {
+export function useSubmissionsQuery(
+  assignmentId: string,
+  enabled = true,
+  params: SubmissionsParams = {},
+) {
   return useQuery({
-    queryKey: ['submissions', assignmentId],
-    queryFn: () => apiSubmissions.getByAssignmentId(assignmentId),
+    queryKey: ['submissions', assignmentId, params],
+    queryFn: () => apiSubmissions.getByAssignmentId(assignmentId, params),
     enabled,
   })
 }

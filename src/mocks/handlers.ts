@@ -2,15 +2,17 @@ import { http, HttpResponse } from 'msw'
 
 const BASE_URL = 'http://localhost:8080/api'
 
-function page<T>(content: T[]) {
+function page<T>(content: T[], pageNumber = 0, pageSize = 10) {
+  const totalElements = content.length
+  const totalPages = Math.max(1, Math.ceil(totalElements / pageSize))
   return {
     content,
-    totalElements: content.length,
-    totalPages: 1,
-    size: 100,
-    number: 0,
-    first: true,
-    last: true,
+    totalElements,
+    totalPages,
+    size: pageSize,
+    number: pageNumber,
+    first: pageNumber === 0,
+    last: pageNumber >= totalPages - 1,
     empty: content.length === 0,
   }
 }
@@ -279,18 +281,6 @@ export const handlers = [
 
   http.delete(`${BASE_URL}/v1/assignments/:assignmentId/submissions/my`, () => {
     return new HttpResponse(null, { status: 204 })
-  }),
-
-  http.get(`${BASE_URL}/v1/submissions/:submissionId`, ({ params }) => {
-    return HttpResponse.json({
-      id: params.submissionId,
-      studentId: '3',
-      studentName: 'Student One',
-      answerText: 'My answer text',
-      fileUrl: null,
-      grade: null,
-      submittedAt: '2026-03-01T00:00:00Z',
-    })
   }),
 
   http.put(`${BASE_URL}/v1/submissions/:submissionId/grade`, async () => {

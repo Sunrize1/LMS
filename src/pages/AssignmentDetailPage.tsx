@@ -8,6 +8,8 @@ import { useCancelSubmissionMutation } from '@/features/assignments/hooks/useCan
 import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
 import { CommentsSection } from '@/features/comments/CommentsSection'
 
+type GradeFilter = 'all' | 'graded' | 'not_graded'
+
 function formatDeadline(deadline: string): string {
   const d = new Date(deadline)
   return d.toLocaleString('ru-RU', {
@@ -27,9 +29,20 @@ export default function AssignmentDetailPage() {
   const isTeacherOrOwner =
     classData?.myRole === 'OWNER' || classData?.myRole === 'TEACHER'
 
-  const { data: submissions } = useSubmissionsQuery(
+  const [page, setPage] = useState(0)
+  const [gradeFilter, setGradeFilter] = useState<GradeFilter>('all')
+
+  const submissionsParams = {
+    page,
+    size: 10,
+    ...(gradeFilter === 'graded' && { graded: true }),
+    ...(gradeFilter === 'not_graded' && { graded: false }),
+  }
+
+  const { data: submissionsPage, isLoading: submissionsLoading } = useSubmissionsQuery(
     assignmentId!,
     !classLoading && isTeacherOrOwner,
+    submissionsParams,
   )
   const { data: submission, isLoading: submissionLoading } = useMySubmissionQuery(
     assignmentId!,
@@ -69,6 +82,11 @@ export default function AssignmentDetailPage() {
     }
   }
 
+  const handleFilterChange = (filter: GradeFilter) => {
+    setGradeFilter(filter)
+    setPage(0)
+  }
+
   return (
     <div>
       <h1 className="mb-2 text-2xl font-bold text-gray-900">{assignment.title}</h1>
@@ -85,26 +103,76 @@ export default function AssignmentDetailPage() {
 
       {!assignment.deadline && <div className="mb-4" />}
 
-      {isTeacherOrOwner && submissions && (
+      {isTeacherOrOwner && (
         <div className="mb-6">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Работы студентов</h2>
-          {submissions.length === 0 && (
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">Работы студентов</h2>
+            <div className="flex gap-1 rounded-lg border border-gray-200 bg-white p-1">
+              {([
+                ['all', 'Все'],
+                ['graded', 'Оценённые'],
+                ['not_graded', 'Не оценённые'],
+              ] as const).map(([value, label]) => (
+                <button
+                  key={value}
+                  onClick={() => handleFilterChange(value)}
+                  className={`rounded-md px-3 py-1 text-sm font-medium transition ${
+                    gradeFilter === value
+                      ? 'bg-indigo-600 text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {submissionsLoading ? (
+            <div className="h-24 animate-pulse rounded-lg bg-gray-200" />
+          ) : submissionsPage && submissionsPage.content.length > 0 ? (
+            <>
+              <div className="space-y-2">
+                {submissionsPage.content.map((sub) => (
+                  <Link
+                    key={sub.id}
+                    to={`/submissions/${sub.id}`}
+                    state={sub}
+                    className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 transition hover:border-indigo-200 hover:shadow-md"
+                  >
+                    <span className="font-medium text-gray-900">{sub.studentName}</span>
+                    <span className="text-sm text-gray-500">
+                      {sub.grade !== null ? `Оценка: ${sub.grade}` : 'Не оценено'}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+
+              {submissionsPage.totalPages > 1 && (
+                <div className="mt-4 flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => setPage((p) => p - 1)}
+                    disabled={submissionsPage.first}
+                    className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50 disabled:opacity-40"
+                  >
+                    Назад
+                  </button>
+                  <span className="text-sm text-gray-500">
+                    {submissionsPage.number + 1} / {submissionsPage.totalPages}
+                  </span>
+                  <button
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={submissionsPage.last}
+                    className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50 disabled:opacity-40"
+                  >
+                    Вперёд
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
             <p className="text-gray-500">Пока нет отправленных работ</p>
           )}
-          <div className="space-y-2">
-            {submissions.map((sub) => (
-              <Link
-                key={sub.id}
-                to={`/submissions/${sub.id}`}
-                className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 transition hover:border-indigo-200 hover:shadow-md"
-              >
-                <span className="font-medium text-gray-900">{sub.studentName}</span>
-                <span className="text-sm text-gray-500">
-                  {sub.grade !== null ? `Оценка: ${sub.grade}` : 'Не оценено'}
-                </span>
-              </Link>
-            ))}
-          </div>
         </div>
       )}
 
