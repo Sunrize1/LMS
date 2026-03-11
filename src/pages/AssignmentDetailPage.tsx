@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAssignmentQuery } from '@/features/assignments/hooks/useAssignmentQuery'
 import { useMySubmissionQuery } from '@/features/assignments/hooks/useMySubmissionQuery'
@@ -31,16 +31,17 @@ export default function AssignmentDetailPage() {
 
   const [gradeFilter, setGradeFilter] = useState<GradeFilter>('all')
 
-  const submissionsParams = {
-    ...(gradeFilter === 'graded' && { graded: true }),
-    ...(gradeFilter === 'not_graded' && { graded: false }),
-  }
-
-  const { data: submissions, isLoading: submissionsLoading } = useSubmissionsQuery(
+  const { data: allSubmissions, isLoading: submissionsLoading } = useSubmissionsQuery(
     assignmentId!,
     !classLoading && isTeacherOrOwner,
-    submissionsParams,
   )
+
+  const submissions = useMemo(() => {
+    if (!allSubmissions) return undefined
+    if (gradeFilter === 'graded') return allSubmissions.filter((s) => s.grade !== null)
+    if (gradeFilter === 'not_graded') return allSubmissions.filter((s) => s.grade === null)
+    return allSubmissions
+  }, [allSubmissions, gradeFilter])
   const { data: submission, isLoading: submissionLoading } = useMySubmissionQuery(
     assignmentId!,
     !classLoading && !isTeacherOrOwner,

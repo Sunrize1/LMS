@@ -252,19 +252,17 @@ export const handlers = [
 
   // Submissions
   http.get(`${BASE_URL}/v1/assignments/:assignmentId/submissions`, () => {
-    return HttpResponse.json(
-      page([
-        {
-          id: 'sub-1',
-          studentId: '3',
-          studentName: 'Student One',
-          answerText: 'My answer',
-          fileUrl: null,
-          grade: null,
-          submittedAt: '2026-03-01T00:00:00Z',
-        },
-      ]),
-    )
+    return HttpResponse.json([
+      {
+        id: 'sub-1',
+        studentId: '3',
+        studentName: 'Student One',
+        answerText: 'My answer',
+        fileUrl: null,
+        grade: null,
+        submittedAt: '2026-03-01T00:00:00Z',
+      },
+    ])
   }),
 
   http.get(`${BASE_URL}/v1/assignments/:assignmentId/submissions/my`, () => {
