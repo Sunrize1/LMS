@@ -1,25 +1,28 @@
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { useSubmissionQuery } from '@/features/submissions/hooks/useSubmissionQuery'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useGradeMutation } from '@/features/submissions/hooks/useGradeMutation'
+import type { SubmissionDto } from '@/types/dto'
 
 export default function SubmissionDetailPage() {
-  const { submissionId } = useParams<{ submissionId: string }>()
+  const location = useLocation()
   const navigate = useNavigate()
-  const { data: submission, isLoading } = useSubmissionQuery(submissionId!)
-  const gradeMutation = useGradeMutation(submissionId!)
+  const submission = location.state as SubmissionDto | undefined
+  const gradeMutation = useGradeMutation(submission?.id ?? '')
   const [grade, setGrade] = useState('')
 
-  if (isLoading) {
+  if (!submission) {
     return (
-      <div className="space-y-4">
-        <div className="h-8 w-48 animate-pulse rounded bg-gray-200" />
-        <div className="h-20 animate-pulse rounded bg-gray-200" />
+      <div className="mx-auto max-w-2xl">
+        <p className="text-gray-500">Данные ответа не найдены.</p>
+        <button
+          onClick={() => navigate(-1)}
+          className="mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-800"
+        >
+          &larr; Назад
+        </button>
       </div>
     )
   }
-
-  if (!submission) return null
 
   const handleGrade = (e: React.FormEvent) => {
     e.preventDefault()

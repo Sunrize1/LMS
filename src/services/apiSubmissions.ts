@@ -2,13 +2,23 @@ import { apiClient } from './apiClient'
 import type { SubmissionDto, Page } from '@/types/dto'
 import type { GradeRequest } from '@/types/requests'
 
+export interface SubmissionsParams {
+  page?: number
+  size?: number
+  graded?: boolean
+}
+
 export const apiSubmissions = {
-  getByAssignmentId: async (assignmentId: string): Promise<SubmissionDto[]> => {
+  getByAssignmentId: async (
+    assignmentId: string,
+    params: SubmissionsParams = {},
+  ): Promise<Page<SubmissionDto>> => {
+    const { page = 0, size = 10, graded } = params
     const response = await apiClient.get<Page<SubmissionDto>>(
       `/v1/assignments/${assignmentId}/submissions`,
-      { params: { page: 0, size: 100 } },
+      { params: { page, size, ...(graded !== undefined && { graded }) } },
     )
-    return response.data.content
+    return response.data
   },
 
   getMy: async (assignmentId: string): Promise<SubmissionDto> => {
@@ -23,14 +33,15 @@ export const apiSubmissions = {
     answerText: string,
     file?: File,
   ): Promise<SubmissionDto> => {
-    const body = file ? file : undefined
+    const formData = new FormData()
+    formData.append('answerText', answerText)
+    if (file) {
+      formData.append('file', file, file.name)
+    }
     const response = await apiClient.post<SubmissionDto>(
       `/v1/assignments/${assignmentId}/submissions`,
-      body,
-      {
-        params: { answerText },
-        headers: file ? { 'Content-Type': 'multipart/form-data' } : undefined,
-      },
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } },
     )
     return response.data
   },
