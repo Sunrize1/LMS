@@ -1,7 +1,5 @@
 import { apiClient } from './apiClient'
 import type { AssignmentDto, AssignmentDetailDto, Page } from '@/types/dto'
-import type { CreateAssignmentRequest } from '@/types/requests'
-
 export const apiAssignments = {
   getByClassId: async (classId: string): Promise<AssignmentDto[]> => {
     const response = await apiClient.get<Page<AssignmentDto>>(
@@ -18,10 +16,22 @@ export const apiAssignments = {
     return response.data
   },
 
-  create: async (classId: string, data: CreateAssignmentRequest): Promise<AssignmentDto> => {
+  create: async (
+    classId: string,
+    data: { title: string; description?: string; deadline?: string },
+    files?: File[],
+  ): Promise<AssignmentDto> => {
+    const formData = new FormData()
+    formData.append('title', data.title)
+    if (data.description) formData.append('description', data.description)
+    if (data.deadline) formData.append('deadline', data.deadline)
+    if (files) {
+      files.forEach((file) => formData.append('files', file, file.name))
+    }
     const response = await apiClient.post<AssignmentDto>(
       `/v1/classes/${classId}/assignments`,
-      data,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } },
     )
     return response.data
   },

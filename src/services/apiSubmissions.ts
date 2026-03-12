@@ -25,7 +25,7 @@ export const apiSubmissions = {
     const formData = new FormData()
     formData.append('answerText', answerText)
     if (file) {
-      formData.append('file', file, file.name)
+      formData.append('files', file, file.name)
     }
     const response = await apiClient.post<SubmissionDto>(
       `/v1/assignments/${assignmentId}/submissions`,

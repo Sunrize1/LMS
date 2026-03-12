@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -7,7 +7,13 @@ import { useCreateAssignmentMutation } from './hooks/useCreateAssignmentMutation
 const schema = z.object({
   title: z.string().min(1, 'Название обязательно').max(255),
   description: z.string().optional(),
-  deadline: z.string().optional(),
+  deadline: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || new Date(val) > new Date(),
+      'Дедлайн не может быть в прошлом',
+    ),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -30,6 +36,8 @@ export function CreateAssignmentModal({ isOpen, onClose, classId }: CreateAssign
   })
 
   const { mutate, isPending, errorMessage } = useCreateAssignmentMutation(classId)
+  const [files, setFiles] = useState<File[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -42,7 +50,10 @@ export function CreateAssignmentModal({ isOpen, onClose, classId }: CreateAssign
   }, [isOpen, onClose])
 
   useEffect(() => {
-    if (!isOpen) reset()
+    if (!isOpen) {
+      reset()
+      setFiles([])
+    }
   }, [isOpen, reset])
 
   if (!isOpen) return null
@@ -51,13 +62,20 @@ export function CreateAssignmentModal({ isOpen, onClose, classId }: CreateAssign
     const payload = {
       ...data,
       deadline: data.deadline ? new Date(data.deadline).toISOString() : undefined,
+      files: files.length > 0 ? files : undefined,
     }
     mutate(payload, {
       onSuccess: () => {
         reset()
+        setFiles([])
         onClose()
       },
     })
+  }
+
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index))
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   return (
@@ -105,6 +123,38 @@ export function CreateAssignmentModal({ isOpen, onClose, classId }: CreateAssign
               {...register('deadline')}
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
+            {errors.deadline && <p className="mt-1 text-sm text-red-600">{errors.deadline.message}</p>}
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              Файлы
+            </label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={(e) => {
+                if (e.target.files) setFiles((prev) => [...prev, ...Array.from(e.target.files!)])
+              }}
+              className="w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-600 hover:file:bg-indigo-100"
+            />
+            {files.length > 0 && (
+              <ul className="mt-2 space-y-1">
+                {files.map((file, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
+                    <span className="truncate">{file.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(i)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      &times;
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {errorMessage && (

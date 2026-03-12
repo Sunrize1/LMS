@@ -47,6 +47,7 @@ export interface AssignmentDto {
   createdAt: string
   submissionStatus?: SubmissionStatus
   grade?: number | null
+  fileUrls?: string[] | null
 }
 
 export interface AssignmentDetailDto {
@@ -60,6 +61,7 @@ export interface AssignmentDetailDto {
   createdAt: string
   submissionStatus?: SubmissionStatus
   grade?: number | null
+  fileUrls?: string[] | null
 }
 
 // ── Submission ──────────────────────────────────

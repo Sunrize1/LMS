@@ -98,7 +98,26 @@ export default function AssignmentDetailPage() {
         </p>
       )}
 
-      {!assignment.deadline && <div className="mb-4" />}
+      {assignment.fileUrls && assignment.fileUrls.length > 0 && (
+        <div className="mb-4">
+          <p className="mb-1 text-sm font-medium text-gray-700">Прикреплённые файлы:</p>
+          <div className="space-y-1">
+            {assignment.fileUrls.map((url, i) => (
+              <a
+                key={i}
+                href={url}
+                className="block text-sm text-indigo-600 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Файл {i + 1}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!assignment.deadline && !assignment.fileUrls?.length && <div className="mb-4" />}
 
       {isTeacherOrOwner && (
         <div className="mb-6">

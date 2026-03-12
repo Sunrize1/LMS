@@ -9,6 +9,7 @@ export default function SubmissionDetailPage() {
   const submission = location.state as SubmissionDto | undefined
   const gradeMutation = useGradeMutation(submission?.id ?? '')
   const [grade, setGrade] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
 
   if (!submission) {
     return (
@@ -68,13 +69,26 @@ export default function SubmissionDetailPage() {
         </p>
       </div>
 
-      {submission.grade !== null ? (
+      {submission.grade !== null && !isEditing ? (
         <div className="rounded-xl border border-green-200 bg-green-50 p-4">
-          <p className="text-lg font-medium text-green-700">Оценка: {submission.grade}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-lg font-medium text-green-700">Оценка: {submission.grade}</p>
+            <button
+              onClick={() => {
+                setGrade(String(submission.grade))
+                setIsEditing(true)
+              }}
+              className="rounded-lg border border-green-300 px-3 py-1.5 text-sm font-medium text-green-700 transition hover:bg-green-100"
+            >
+              Изменить
+            </button>
+          </div>
         </div>
       ) : (
         <form onSubmit={handleGrade} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <h2 className="mb-3 text-lg font-semibold text-gray-900">Оценить работу</h2>
+          <h2 className="mb-3 text-lg font-semibold text-gray-900">
+            {isEditing ? 'Изменить оценку' : 'Оценить работу'}
+          </h2>
           <div className="flex items-end gap-3">
             <div>
               <label htmlFor="grade" className="mb-1 block text-sm font-medium text-gray-700">
@@ -95,8 +109,20 @@ export default function SubmissionDetailPage() {
               disabled={!grade || gradeMutation.isPending}
               className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-50"
             >
-              {gradeMutation.isPending ? 'Сохранение...' : 'Поставить оценку'}
+              {gradeMutation.isPending ? 'Сохранение...' : isEditing ? 'Сохранить' : 'Поставить оценку'}
             </button>
+            {isEditing && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditing(false)
+                  setGrade('')
+                }}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+              >
+                Отмена
+              </button>
+            )}
           </div>
 
           {gradeMutation.errorMessage && (
