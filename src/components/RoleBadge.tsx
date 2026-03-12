@@ -1,5 +1,6 @@
 import { cn } from '@/utils/cn'
 import type { Role } from '@/types/dto'
+import { translateRole } from '@/utils/roleTranslations'
 
 const roleStyles: Record<Role, string> = {
   OWNER: 'bg-purple-100 text-purple-800',
@@ -21,7 +22,7 @@ export function RoleBadge({ role, className }: RoleBadgeProps) {
         className,
       )}
     >
-      {role}
+      {translateRole(role)}
     </span>
   )
 }

@@ -50,7 +50,7 @@ describe('MemberProfilePage', () => {
     renderWithProviders()
 
     await waitFor(() => {
-      expect(screen.getByText('STUDENT')).toBeInTheDocument()
+      expect(screen.getByText('Студент')).toBeInTheDocument()
     })
   })
 

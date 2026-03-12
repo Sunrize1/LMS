@@ -29,7 +29,7 @@ describe('ClassCard', () => {
 
   it('should display role badge', () => {
     renderClassCard()
-    expect(screen.getByText('STUDENT')).toBeInTheDocument()
+    expect(screen.getByText('Студент')).toBeInTheDocument()
   })
 
   it('should display member count', () => {
@@ -45,6 +45,6 @@ describe('ClassCard', () => {
 
   it('should display OWNER role badge for owner', () => {
     renderClassCard({ ...mockClass, myRole: 'OWNER' })
-    expect(screen.getByText('OWNER')).toBeInTheDocument()
+    expect(screen.getByText('Владелец')).toBeInTheDocument()
   })
 })

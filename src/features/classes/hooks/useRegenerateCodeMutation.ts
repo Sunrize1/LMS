@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClasses } from '@/services/apiClasses'
+import type { ClassDto } from '@/types/dto'
 import { handleApiError } from '@/utils/handleApiError'
 import { useState } from 'react'
 
@@ -9,9 +10,9 @@ export function useRegenerateCodeMutation(classId: string) {
 
   const mutation = useMutation({
     mutationFn: () => apiClasses.regenerateCode(classId),
-    onSuccess: () => {
+    onSuccess: (updatedClass: ClassDto) => {
       setErrorMessage(null)
-      queryClient.invalidateQueries({ queryKey: ['class', classId] })
+      queryClient.setQueryData(['class', classId], updatedClass)
     },
     onError: (error) => {
       setErrorMessage(handleApiError(error))

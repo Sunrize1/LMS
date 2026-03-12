@@ -8,12 +8,16 @@ export const apiClient = axios.create({
   },
 })
 
-// Request interceptor: attach JWT token
 apiClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+  
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type']
+  }
+  
   return config
 })
 

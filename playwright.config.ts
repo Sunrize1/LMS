@@ -15,5 +15,8 @@ export default defineConfig({
     command: 'npm run dev',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
+    env: {
+      VITE_ENABLE_MSW: 'true',
+    },
   },
 })

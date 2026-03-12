@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { apiUsers } from '@/services/apiUsers'
+import { apiClient } from '@/services/apiClient'
 import type { UserDto } from '@/types/dto'
 
 describe('apiUsers', () => {
@@ -22,9 +23,24 @@ describe('apiUsers', () => {
   })
 
   it('should upload avatar', async () => {
+    const mockResponse: UserDto = {
+      id: '1',
+      firstName: 'Ivan',
+      lastName: 'Ivanov',
+      email: 'user@test.com',
+      avatarUrl: 'http://localhost:8080/api/v1/files/avatar.jpeg',
+      dateOfBirth: '2000-01-01',
+      createdAt: '2026-01-01T00:00:00Z',
+    }
+
+    const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce({ data: mockResponse })
+
     const file = new File(['test'], 'avatar.png', { type: 'image/png' })
     const result: UserDto = await apiUsers.uploadAvatar(file)
 
     expect(result.avatarUrl).toBe('http://localhost:8080/api/v1/files/avatar.jpeg')
+    expect(postSpy).toHaveBeenCalledWith('/v1/users/me/avatar', expect.any(FormData))
+
+    postSpy.mockRestore()
   })
 })

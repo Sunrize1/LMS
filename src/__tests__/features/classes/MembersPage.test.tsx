@@ -48,7 +48,7 @@ describe('MembersPage', () => {
     renderWithProviders()
 
     await waitFor(() => {
-      expect(screen.getByText('OWNER')).toBeInTheDocument()
+      expect(screen.getByText('Владелец')).toBeInTheDocument()
     })
   })
 

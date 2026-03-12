@@ -5,6 +5,7 @@ import { useRemoveMemberMutation } from '@/features/classes/hooks/useRemoveMembe
 import { useAssignRoleMutation } from '@/features/classes/hooks/useAssignRoleMutation'
 import { useAuthStore } from '@/store/authStore'
 import { RoleBadge } from '@/components/RoleBadge'
+import { translateRole } from '@/utils/roleTranslations'
 
 export default function MembersPage() {
   const { classId } = useParams<{ classId: string }>()
@@ -82,8 +83,8 @@ export default function MembersPage() {
                   className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   aria-label={`Роль ${member.firstName} ${member.lastName}`}
                 >
-                  <option value="STUDENT">STUDENT</option>
-                  <option value="TEACHER">TEACHER</option>
+                  <option value="STUDENT">{translateRole('STUDENT')}</option>
+                  <option value="TEACHER">{translateRole('TEACHER')}</option>
                 </select>
               ) : (
                 <RoleBadge role={member.role} />

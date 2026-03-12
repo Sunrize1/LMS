@@ -15,7 +15,7 @@ export const apiUsers = {
 
   uploadAvatar: async (file: File): Promise<UserDto> => {
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('file', file, file.name)
     const response = await apiClient.post<UserDto>('/v1/users/me/avatar', formData)
     return response.data
   },
