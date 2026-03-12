@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useGradeMutation } from '@/features/submissions/hooks/useGradeMutation'
 import type { SubmissionDto } from '@/types/dto'
+import { toAbsoluteFileUrl } from '@/utils/fileUrl'
 
 export default function SubmissionDetailPage() {
   const location = useLocation()
@@ -54,7 +55,7 @@ export default function SubmissionDetailPage() {
             {submission.fileUrls.map((url, i) => (
               <a
                 key={i}
-                href={url}
+                href={toAbsoluteFileUrl(url)}
                 className="block text-indigo-600 hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"

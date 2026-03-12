@@ -7,6 +7,7 @@ import { useSubmitMutation } from '@/features/assignments/hooks/useSubmitMutatio
 import { useCancelSubmissionMutation } from '@/features/assignments/hooks/useCancelSubmissionMutation'
 import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
 import { CommentsSection } from '@/features/comments/CommentsSection'
+import { toAbsoluteFileUrl } from '@/utils/fileUrl'
 
 type GradeFilter = 'all' | 'graded' | 'not_graded'
 
@@ -105,7 +106,7 @@ export default function AssignmentDetailPage() {
             {assignment.fileUrls.map((url, i) => (
               <a
                 key={i}
-                href={url}
+                href={toAbsoluteFileUrl(url)}
                 className="block text-sm text-indigo-600 hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -181,7 +182,7 @@ export default function AssignmentDetailPage() {
               {submission.fileUrls.map((url, i) => (
                 <a
                   key={i}
-                  href={url}
+                  href={toAbsoluteFileUrl(url)}
                   className="block text-sm text-indigo-600 hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
