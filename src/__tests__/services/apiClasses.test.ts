@@ -3,13 +3,13 @@ import { apiClasses } from '@/services/apiClasses'
 import type { ClassDto } from '@/types/dto'
 
 describe('apiClasses', () => {
-  it('should return list of classes', async () => {
-    const result: ClassDto[] = await apiClasses.getMyClasses()
+  it('should return paginated list of classes', async () => {
+    const result = await apiClasses.getMyClasses()
 
-    expect(result).toHaveLength(2)
-    expect(result[0].name).toBe('Math 101')
-    expect(result[0].myRole).toBe('STUDENT')
-    expect(result[1].myRole).toBe('OWNER')
+    expect(result.content).toHaveLength(2)
+    expect(result.content[0].name).toBe('Math 101')
+    expect(result.content[0].myRole).toBe('STUDENT')
+    expect(result.content[1].myRole).toBe('OWNER')
   })
 
   it('should create a new class', async () => {
@@ -25,5 +25,11 @@ describe('apiClasses', () => {
 
     expect(result.id).toBe('cls-1')
     expect(result.name).toBe('Math 101')
+  })
+
+  it('should regenerate class code', async () => {
+    const result: ClassDto = await apiClasses.regenerateCode('cls-2')
+
+    expect(result.code).toBe('NEWC9999')
   })
 })

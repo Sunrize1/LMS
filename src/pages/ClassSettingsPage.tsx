@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
 import { useUpdateClassMutation } from '@/features/classes/hooks/useUpdateClassMutation'
 import { useDeleteClassMutation } from '@/features/classes/hooks/useDeleteClassMutation'
+import { useRegenerateCodeMutation } from '@/features/classes/hooks/useRegenerateCodeMutation'
 
 export default function ClassSettingsPage() {
   const { classId } = useParams<{ classId: string }>()
@@ -10,6 +11,7 @@ export default function ClassSettingsPage() {
   const { data: classData, isLoading } = useClassQuery(classId!)
   const updateClass = useUpdateClassMutation(classId!)
   const { mutate: deleteClass } = useDeleteClassMutation()
+  const regenerateCode = useRegenerateCodeMutation(classId!)
   const [copied, setCopied] = useState(false)
   const [className, setClassName] = useState('')
 
@@ -53,6 +55,8 @@ export default function ClassSettingsPage() {
 
   if (!classData) return null
 
+  const isOwner = classData.myRole === 'OWNER'
+
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <h1 className="text-2xl font-bold text-gray-900">Настройки класса</h1>
@@ -70,7 +74,7 @@ export default function ClassSettingsPage() {
               type="text"
               value={className}
               onChange={(e) => setClassName(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
           <button
@@ -92,7 +96,7 @@ export default function ClassSettingsPage() {
       <div className="rounded-xl border border-gray-200 bg-white p-6">
         <h2 className="mb-3 text-lg font-semibold text-gray-900">Пригласительный код</h2>
         <div className="flex items-center gap-3">
-          <code className="rounded bg-gray-100 px-4 py-2 font-mono text-lg tracking-widest">
+          <code className="rounded bg-gray-100 px-4 py-2 font-mono text-lg tracking-widest text-gray-900">
             {classData.code}
           </code>
           <button
@@ -101,22 +105,31 @@ export default function ClassSettingsPage() {
           >
             {copied ? 'Скопировано!' : 'Скопировать'}
           </button>
+          <button
+            onClick={() => regenerateCode.mutate()}
+            disabled={regenerateCode.isPending}
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          >
+            {regenerateCode.isPending ? 'Обновление...' : 'Обновить код'}
+          </button>
         </div>
       </div>
 
-      {/* Danger zone */}
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6">
-        <h2 className="mb-3 text-lg font-semibold text-red-900">Опасная зона</h2>
-        <p className="mb-4 text-sm text-red-700">
-          Удаление класса приведёт к потере всех заданий и ответов.
-        </p>
-        <button
-          onClick={handleDelete}
-          className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-        >
-          Удалить класс
-        </button>
-      </div>
+      {/* Danger zone — only for OWNER */}
+      {isOwner && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6">
+          <h2 className="mb-3 text-lg font-semibold text-red-900">Опасная зона</h2>
+          <p className="mb-4 text-sm text-red-700">
+            Удаление класса приведёт к потере всех заданий и ответов.
+          </p>
+          <button
+            onClick={handleDelete}
+            className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+          >
+            Удалить класс
+          </button>
+        </div>
+      )}
     </div>
   )
 }

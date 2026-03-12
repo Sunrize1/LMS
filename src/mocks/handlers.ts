@@ -114,6 +114,17 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 })
   }),
 
+  http.post(`${BASE_URL}/v1/classes/:classId/code/regenerate`, ({ params }) => {
+    return HttpResponse.json({
+      id: params.classId,
+      name: 'Math 101',
+      code: 'NEWC9999',
+      myRole: 'OWNER',
+      memberCount: 20,
+      createdAt: '2026-01-15T00:00:00Z',
+    })
+  }),
+
   http.get(`${BASE_URL}/v1/classes/:classId/members`, () => {
     return HttpResponse.json(
       page([
@@ -124,6 +135,7 @@ export const handlers = [
           email: 'ivan@test.com',
           role: 'OWNER',
           joinedAt: '2026-01-15T00:00:00Z',
+          avatarUrl: null,
         },
         {
           userId: '2',
@@ -132,6 +144,7 @@ export const handlers = [
           email: 'petr@test.com',
           role: 'STUDENT',
           joinedAt: '2026-02-01T00:00:00Z',
+          avatarUrl: null,
         },
       ]),
     )
@@ -145,6 +158,7 @@ export const handlers = [
       email: 'petr@test.com',
       role: 'STUDENT',
       joinedAt: '2026-02-01T00:00:00Z',
+      avatarUrl: null,
     })
   }),
 
@@ -156,6 +170,7 @@ export const handlers = [
       email: 'petr@test.com',
       role: 'TEACHER',
       joinedAt: '2026-02-01T00:00:00Z',
+      avatarUrl: null,
     })
   }),
 
@@ -226,8 +241,9 @@ export const handlers = [
         id: 'sub-new',
         studentId: '1',
         studentName: 'Ivan Ivanov',
+        studentAvatarUrl: null,
         answerText: 'My answer',
-        fileUrl: null,
+        fileUrls: null,
         grade: null,
         submittedAt: '2026-03-04T00:00:00Z',
       },
@@ -257,8 +273,9 @@ export const handlers = [
         id: 'sub-1',
         studentId: '3',
         studentName: 'Student One',
+        studentAvatarUrl: null,
         answerText: 'My answer',
-        fileUrl: null,
+        fileUrls: null,
         grade: null,
         submittedAt: '2026-03-01T00:00:00Z',
       },
@@ -270,8 +287,9 @@ export const handlers = [
       id: 'sub-2',
       studentId: '1',
       studentName: 'Ivan Ivanov',
+      studentAvatarUrl: null,
       answerText: 'My submission',
-      fileUrl: null,
+      fileUrls: null,
       grade: 85,
       submittedAt: '2026-03-01T00:00:00Z',
     })
@@ -286,8 +304,9 @@ export const handlers = [
       id: 'sub-1',
       studentId: '3',
       studentName: 'Student One',
+      studentAvatarUrl: null,
       answerText: 'My answer text',
-      fileUrl: null,
+      fileUrls: null,
       grade: 90,
       submittedAt: '2026-03-01T00:00:00Z',
     })
@@ -302,6 +321,7 @@ export const handlers = [
           assignmentId: params.assignmentId as string,
           authorId: '1',
           authorName: 'Ivan Ivanov',
+          authorAvatarUrl: null,
           text: 'Test comment',
           createdAt: '2026-03-01T12:00:00Z',
         },
@@ -316,6 +336,7 @@ export const handlers = [
         assignmentId: params.assignmentId as string,
         authorId: '1',
         authorName: 'Ivan Ivanov',
+        authorAvatarUrl: null,
         text: 'New comment',
         createdAt: '2026-03-04T12:00:00Z',
       },
@@ -345,6 +366,18 @@ export const handlers = [
       email: 'user@test.com',
       avatarUrl: body.avatarUrl ?? null,
       dateOfBirth: body.dateOfBirth ?? '2000-01-01',
+      createdAt: '2026-01-01T00:00:00Z',
+    })
+  }),
+
+  http.post(`${BASE_URL}/v1/users/me/avatar`, async () => {
+    return HttpResponse.json({
+      id: '1',
+      firstName: 'Ivan',
+      lastName: 'Ivanov',
+      email: 'user@test.com',
+      avatarUrl: 'http://localhost:8080/api/v1/files/avatar.jpeg',
+      dateOfBirth: '2000-01-01',
       createdAt: '2026-01-01T00:00:00Z',
     })
   }),

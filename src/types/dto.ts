@@ -33,6 +33,7 @@ export interface MemberDto {
   email: string
   role: Role
   joinedAt: string
+  avatarUrl: string | null
 }
 
 // ── Assignment ──────────────────────────────────
@@ -66,8 +67,9 @@ export interface SubmissionDto {
   id: string
   studentId: string
   studentName: string
+  studentAvatarUrl: string | null
   answerText: string | null
-  fileUrl: string | null
+  fileUrls: string[] | null
   grade: number | null
   submittedAt: string
 }
@@ -78,6 +80,7 @@ export interface CommentDto {
   assignmentId: string
   authorId: string
   authorName: string
+  authorAvatarUrl: string | null
   text: string
   createdAt: string
 }

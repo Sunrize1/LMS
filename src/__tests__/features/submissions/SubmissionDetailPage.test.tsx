@@ -12,7 +12,8 @@ const mockSubmission: SubmissionDto = {
   studentId: '3',
   studentName: 'Student One',
   answerText: 'My answer text',
-  fileUrl: null,
+  studentAvatarUrl: null,
+  fileUrls: null,
   grade: null,
   submittedAt: '2026-03-01T00:00:00Z',
 }

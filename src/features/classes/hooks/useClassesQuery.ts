@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { apiClasses } from '@/services/apiClasses'
 
-export function useClassesQuery() {
+export function useClassesQuery(page = 0, size = 20) {
   return useQuery({
-    queryKey: ['classes'],
-    queryFn: apiClasses.getMyClasses,
+    queryKey: ['classes', page, size],
+    queryFn: () => apiClasses.getMyClasses(page, size),
   })
 }

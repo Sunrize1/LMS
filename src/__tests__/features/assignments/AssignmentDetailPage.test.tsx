@@ -110,7 +110,8 @@ describe('AssignmentDetailPage', () => {
           studentId: '1',
           studentName: 'Ivan Ivanov',
           answerText: 'My submission',
-          fileUrl: null,
+          studentAvatarUrl: null,
+          fileUrls: null,
           grade: null,
           submittedAt: '2026-03-01T00:00:00Z',
         })

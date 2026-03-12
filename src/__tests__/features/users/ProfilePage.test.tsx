@@ -58,4 +58,12 @@ describe('ProfilePage', () => {
       expect(screen.getByRole('button', { name: /сохранить/i })).toBeInTheDocument()
     })
   })
+
+  it('should have a hidden file input for avatar upload', async () => {
+    renderWithProviders()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('avatar-upload')).toBeInTheDocument()
+    })
+  })
 })

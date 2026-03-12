@@ -12,4 +12,11 @@ export const apiUsers = {
     const response = await apiClient.put<UserDto>('/v1/users/me', data)
     return response.data
   },
+
+  uploadAvatar: async (file: File): Promise<UserDto> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await apiClient.post<UserDto>('/v1/users/me/avatar', formData)
+    return response.data
+  },
 }

@@ -37,9 +37,17 @@ export function CommentsSection({ assignmentId }: CommentsSectionProps) {
           {comments.map((comment) => (
             <div key={comment.id} className="rounded-xl border border-gray-200 bg-white p-4">
               <div className="mb-1 flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-600">
-                  {comment.authorName.split(' ').map(p => p[0]).join('').slice(0, 2)}
-                </div>
+                {comment.authorAvatarUrl ? (
+                  <img
+                    src={comment.authorAvatarUrl}
+                    alt=""
+                    className="h-7 w-7 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-600">
+                    {comment.authorName.split(' ').map(p => p[0]).join('').slice(0, 2)}
+                  </div>
+                )}
                 <span className="text-sm font-medium text-gray-900">
                   {comment.authorName}
                 </span>
@@ -59,7 +67,7 @@ export function CommentsSection({ assignmentId }: CommentsSectionProps) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Написать комментарий..."
-          className="flex-1 rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="flex-1 rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
         <button
           type="submit"

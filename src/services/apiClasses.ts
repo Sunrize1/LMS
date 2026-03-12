@@ -3,11 +3,16 @@ import type { ClassDto, Page } from '@/types/dto'
 import type { CreateClassRequest, JoinClassRequest, UpdateClassRequest } from '@/types/requests'
 
 export const apiClasses = {
-  getMyClasses: async (): Promise<ClassDto[]> => {
+  getMyClasses: async (page = 0, size = 20): Promise<Page<ClassDto>> => {
     const response = await apiClient.get<Page<ClassDto>>('/v1/classes', {
-      params: { page: 0, size: 100 },
+      params: { page, size },
     })
-    return response.data.content
+    return response.data
+  },
+
+  getClass: async (classId: string): Promise<ClassDto> => {
+    const response = await apiClient.get<ClassDto>(`/v1/classes/${classId}`)
+    return response.data
   },
 
   createClass: async (data: CreateClassRequest): Promise<ClassDto> => {
@@ -27,5 +32,10 @@ export const apiClasses = {
 
   deleteClass: async (classId: string): Promise<void> => {
     await apiClient.delete(`/v1/classes/${classId}`)
+  },
+
+  regenerateCode: async (classId: string): Promise<ClassDto> => {
+    const response = await apiClient.post<ClassDto>(`/v1/classes/${classId}/code/regenerate`)
+    return response.data
   },
 }

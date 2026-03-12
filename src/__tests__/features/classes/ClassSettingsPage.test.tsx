@@ -52,14 +52,34 @@ describe('ClassSettingsPage', () => {
     expect(screen.getByRole('button', { name: /скопировать/i })).toBeInTheDocument()
   })
 
-  it('should show delete class button', async () => {
+  it('should have a regenerate code button', async () => {
     renderPage()
 
     await waitFor(() => {
       expect(screen.getByText('ABCD1234')).toBeInTheDocument()
     })
 
+    expect(screen.getByRole('button', { name: /обновить код/i })).toBeInTheDocument()
+  })
+
+  it('should show delete class button only for OWNER', async () => {
+    renderPage('cls-2') // cls-2 is OWNER in mock
+
+    await waitFor(() => {
+      expect(screen.getByText('ABCD1234')).toBeInTheDocument()
+    })
+
     expect(screen.getByRole('button', { name: /удалить класс/i })).toBeInTheDocument()
+  })
+
+  it('should hide delete class button for non-OWNER', async () => {
+    renderPage('cls-1') // cls-1 is STUDENT in mock
+
+    await waitFor(() => {
+      expect(screen.getByText('ABCD1234')).toBeInTheDocument()
+    })
+
+    expect(screen.queryByRole('button', { name: /удалить класс/i })).not.toBeInTheDocument()
   })
 
   it('should show class name input pre-filled with current name', async () => {

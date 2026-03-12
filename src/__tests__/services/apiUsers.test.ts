@@ -20,4 +20,11 @@ describe('apiUsers', () => {
     expect(result.firstName).toBe('Updated')
     expect(result.lastName).toBe('User')
   })
+
+  it('should upload avatar', async () => {
+    const file = new File(['test'], 'avatar.png', { type: 'image/png' })
+    const result: UserDto = await apiUsers.uploadAvatar(file)
+
+    expect(result.avatarUrl).toBe('http://localhost:8080/api/v1/files/avatar.jpeg')
+  })
 })

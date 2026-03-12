@@ -16,6 +16,12 @@ export default function MembersPage() {
 
   const isOwner = classData?.myRole === 'OWNER'
 
+  const handleRemove = (member: { userId: string; firstName: string; lastName: string }) => {
+    if (window.confirm(`Удалить участника ${member.firstName} ${member.lastName} из класса?`)) {
+      removeMember.mutate(member.userId)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -43,10 +49,18 @@ export default function MembersPage() {
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600">
-                {member.firstName[0]}
-                {member.lastName[0]}
-              </div>
+              {member.avatarUrl ? (
+                <img
+                  src={member.avatarUrl}
+                  alt=""
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600">
+                  {member.firstName[0]}
+                  {member.lastName[0]}
+                </div>
+              )}
               <div>
                 <p className="font-medium text-gray-900">
                   {member.firstName} {member.lastName}
@@ -65,7 +79,7 @@ export default function MembersPage() {
                       role: e.target.value as 'TEACHER' | 'STUDENT',
                     })
                   }
-                  className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   aria-label={`Роль ${member.firstName} ${member.lastName}`}
                 >
                   <option value="STUDENT">STUDENT</option>
@@ -76,7 +90,7 @@ export default function MembersPage() {
               )}
               {isOwner && member.userId !== currentUser?.id && (
                 <button
-                  onClick={() => removeMember.mutate(member.userId)}
+                  onClick={() => handleRemove(member)}
                   className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
                 >
                   Удалить

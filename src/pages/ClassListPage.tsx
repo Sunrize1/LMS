@@ -6,10 +6,14 @@ import { CreateClassModal } from '@/features/classes/CreateClassModal'
 import { JoinClassModal } from '@/features/classes/JoinClassModal'
 
 export default function ClassListPage() {
-  const { data: classes, isLoading } = useClassesQuery()
+  const [page, setPage] = useState(0)
+  const { data, isLoading } = useClassesQuery(page)
   const [menuOpen, setMenuOpen] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showJoinModal, setShowJoinModal] = useState(false)
+
+  const classes = data?.content
+  const totalPages = data?.totalPages ?? 0
 
   return (
     <div>
@@ -70,11 +74,35 @@ export default function ClassListPage() {
       )}
 
       {!isLoading && classes && classes.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {classes.map((cls) => (
-            <ClassCard key={cls.id} classItem={cls} />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {classes.map((cls) => (
+              <ClassCard key={cls.id} classItem={cls} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 transition hover:bg-gray-50 disabled:opacity-50"
+              >
+                Назад
+              </button>
+              <span className="text-sm text-gray-600">
+                {page + 1} / {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page >= totalPages - 1}
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 transition hover:bg-gray-50 disabled:opacity-50"
+              >
+                Вперёд
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       <CreateClassModal

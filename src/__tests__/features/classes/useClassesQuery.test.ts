@@ -15,7 +15,7 @@ describe('useClassesQuery', () => {
     queryClient.clear()
   })
 
-  it('should fetch and return list of classes', async () => {
+  it('should fetch and return paginated list of classes', async () => {
     const { result } = renderHook(() => useClassesQuery(), {
       wrapper: createWrapper(),
     })
@@ -24,8 +24,8 @@ describe('useClassesQuery', () => {
       expect(result.current.isSuccess).toBe(true)
     })
 
-    expect(result.current.data).toHaveLength(2)
-    expect(result.current.data![0].name).toBe('Math 101')
-    expect(result.current.data![1].name).toBe('Physics 201')
+    expect(result.current.data!.content).toHaveLength(2)
+    expect(result.current.data!.content[0].name).toBe('Math 101')
+    expect(result.current.data!.content[1].name).toBe('Physics 201')
   })
 })

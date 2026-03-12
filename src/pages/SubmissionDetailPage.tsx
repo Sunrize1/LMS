@@ -48,15 +48,20 @@ export default function SubmissionDetailPage() {
         {submission.answerText && (
           <p className="text-gray-700">{submission.answerText}</p>
         )}
-        {submission.fileUrl && (
-          <a
-            href={submission.fileUrl}
-            className="mt-2 inline-block text-indigo-600 hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Скачать файл
-          </a>
+        {submission.fileUrls && submission.fileUrls.length > 0 && (
+          <div className="mt-2 space-y-1">
+            {submission.fileUrls.map((url, i) => (
+              <a
+                key={i}
+                href={url}
+                className="block text-indigo-600 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Файл {i + 1}
+              </a>
+            ))}
+          </div>
         )}
         <p className="mt-2 text-xs text-gray-400">
           Отправлено: {new Date(submission.submittedAt).toLocaleString('ru-RU')}
