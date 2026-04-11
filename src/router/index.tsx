@@ -16,6 +16,8 @@ const MembersPage = lazy(() => import('@/pages/MembersPage'))
 const MemberProfilePage = lazy(() => import('@/pages/MemberProfilePage'))
 const AssignmentDetailPage = lazy(() => import('@/pages/AssignmentDetailPage'))
 const SubmissionDetailPage = lazy(() => import('@/pages/SubmissionDetailPage'))
+const TeamListPage = lazy(() => import('@/pages/TeamListPage'))
+const TeamDetailPage = lazy(() => import('@/pages/TeamDetailPage'))
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
 const JoinPage = lazy(() => import('@/pages/JoinPage'))
 
@@ -95,6 +97,22 @@ export const router = createBrowserRouter([
             element: (
               <LazyPage>
                 <ClassSettingsPage />
+              </LazyPage>
+            ),
+          },
+          {
+            path: '/classes/:classId/teams',
+            element: (
+              <LazyPage>
+                <TeamListPage />
+              </LazyPage>
+            ),
+          },
+          {
+            path: '/classes/:classId/teams/:teamId',
+            element: (
+              <LazyPage>
+                <TeamDetailPage />
               </LazyPage>
             ),
           },
