@@ -39,11 +39,15 @@ export interface MemberDto {
 // ── Assignment ──────────────────────────────────
 export type SubmissionStatus = 'NOT_SUBMITTED' | 'SUBMITTED' | 'GRADED'
 
+export type AssignmentType = 'STANDARD' | 'QUICK'
+
 export interface AssignmentDto {
   id: string
   title: string
   description: string | null
   deadline: string | null
+  type?: AssignmentType
+  isTeamBased?: boolean
   createdAt: string
   submissionStatus?: SubmissionStatus
   grade?: number | null
@@ -56,6 +60,8 @@ export interface AssignmentDetailDto {
   title: string
   description: string | null
   deadline: string | null
+  type?: AssignmentType
+  isTeamBased?: boolean
   createdBy: string
   createdByName: string
   createdAt: string
@@ -84,6 +90,96 @@ export interface CommentDto {
   authorName: string
   authorAvatarUrl: string | null
   text: string
+  createdAt: string
+}
+
+// ── Team ───────────────────────────────────────
+export interface TeamDto {
+  id: string
+  classId: string
+  assignmentId: string | null
+  name: string
+  members: TeamMemberDto[]
+  createdBy: string
+  createdAt: string
+}
+
+export interface TeamMemberDto {
+  userId: string
+  firstName: string
+  lastName: string
+  isLeader: boolean
+  joinedAt?: string
+}
+
+export interface TeamListItemDto {
+  id: string
+  name: string
+  assignmentId: string | null
+  memberCount: number
+  leaderName: string
+  createdAt: string
+}
+
+export interface ShuffleResponse {
+  teams: TeamDto[]
+  totalStudents: number
+  studentsPerTeam: number
+}
+
+// ── Team Grade ─────────────────────────────────
+export interface TeamGradeDto {
+  id: string
+  teamId: string
+  teamName: string
+  assignmentId: string
+  grade: number
+  comment: string | null
+  individualGrades: IndividualAdjustmentDto[]
+  gradedBy: string
+  gradedAt: string
+}
+
+export interface TeamGradeListItemDto {
+  id: string
+  teamId: string
+  teamName: string
+  grade: number
+  memberCount: number
+  gradedAt: string
+}
+
+export interface IndividualAdjustmentDto {
+  studentId: string
+  studentName: string
+  teamGrade: number
+  adjustment: number
+  finalGrade: number
+  comment: string | null
+  gradedBy?: string
+  gradedAt?: string
+}
+
+export interface MyTeamGradeDto {
+  teamId: string
+  teamName: string
+  teamGrade: number
+  myAdjustment: number
+  myFinalGrade: number
+  comment: string | null
+  gradedAt: string
+}
+
+// ── Quick Assignment ───────────────────────────
+export interface QuickAssignmentDto {
+  id: string
+  classId: string
+  title: string
+  type: 'QUICK'
+  isTeamBased: boolean
+  deadline: null
+  teams: { id: string; name: string }[] | null
+  createdBy: string
   createdAt: string
 }
 
