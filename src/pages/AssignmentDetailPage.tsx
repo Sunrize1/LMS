@@ -7,6 +7,8 @@ import { useSubmitMutation } from '@/features/assignments/hooks/useSubmitMutatio
 import { useCancelSubmissionMutation } from '@/features/assignments/hooks/useCancelSubmissionMutation'
 import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
 import { CommentsSection } from '@/features/comments/CommentsSection'
+import { TeamGradeWidget } from '@/features/team-grades/TeamGradeWidget'
+import { MyTeamGrade } from '@/features/team-grades/MyTeamGrade'
 import { toAbsoluteFileUrl } from '@/utils/fileUrl'
 
 type GradeFilter = 'all' | 'graded' | 'not_graded'
@@ -263,6 +265,18 @@ export default function AssignmentDetailPage() {
             </>
           )}
         </form>
+      )}
+
+      {assignment.isTeamBased && isTeacherOrOwner && (
+        <TeamGradeWidget
+          assignmentId={assignmentId!}
+          classId={classId!}
+          isOwnerOrTeacher={isTeacherOrOwner}
+        />
+      )}
+
+      {assignment.isTeamBased && !isTeacherOrOwner && (
+        <MyTeamGrade assignmentId={assignmentId!} />
       )}
 
       <CommentsSection assignmentId={assignmentId!} />
