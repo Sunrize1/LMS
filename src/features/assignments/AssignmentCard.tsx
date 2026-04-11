@@ -20,9 +20,21 @@ export function AssignmentCard({ assignment, classId }: AssignmentCardProps) {
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-medium text-gray-900 transition group-hover:text-indigo-600">
-            {assignment.title}
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-medium text-gray-900 transition group-hover:text-indigo-600">
+              {assignment.title}
+            </h3>
+            {assignment.type === 'QUICK' && (
+              <span className="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800">
+                Быстрое
+              </span>
+            )}
+            {assignment.isTeamBased && (
+              <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                Командное
+              </span>
+            )}
+          </div>
           {assignment.submissionStatus && (
             <StatusBadge status={assignment.submissionStatus} />
           )}
