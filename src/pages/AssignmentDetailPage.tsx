@@ -9,6 +9,11 @@ import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
 import { CommentsSection } from '@/features/comments/CommentsSection'
 import { TeamGradeWidget } from '@/features/team-grades/TeamGradeWidget'
 import { MyTeamGrade } from '@/features/team-grades/MyTeamGrade'
+import { RubricViewer } from '@/features/rubric/RubricViewer'
+import { AttachRubricModal } from '@/features/rubric/AttachRubricModal'
+import { useAssignmentRubricQuery } from '@/features/rubric/hooks/useAssignmentRubricQuery'
+import { useDetachRubricMutation } from '@/features/rubric/hooks/useRubricAttachmentMutations'
+import { apiRubricTemplates } from '@/services/apiRubricTemplates'
 import { toAbsoluteFileUrl } from '@/utils/fileUrl'
 
 type GradeFilter = 'all' | 'graded' | 'not_graded'
@@ -54,6 +59,29 @@ export default function AssignmentDetailPage() {
   const cancelMutation = useCancelSubmissionMutation(assignmentId!)
   const [answerText, setAnswerText] = useState('')
   const [file, setFile] = useState<File | null>(null)
+
+  const { data: rubric } = useAssignmentRubricQuery(assignmentId!, !classLoading)
+  const detachMutation = useDetachRubricMutation(assignmentId!)
+  const [showAttachModal, setShowAttachModal] = useState(false)
+
+  const handleDetach = () => {
+    if (window.confirm('Открепить рубрику? Это запрещено, если уже есть оценивания.')) {
+      detachMutation.mutate()
+    }
+  }
+
+  const handleExportAttached = async () => {
+    if (!rubric?.sourceTemplateId) return
+    const blob = await apiRubricTemplates.exportTemplate(rubric.sourceTemplateId)
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `rubric-${rubric.name}.json`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+  }
 
   if (classLoading || assignmentLoading) {
     return (
@@ -121,6 +149,56 @@ export default function AssignmentDetailPage() {
       )}
 
       {!assignment.deadline && !assignment.fileUrls?.length && <div className="mb-4" />}
+
+      <div className="mb-6 space-y-3">
+        {rubric ? (
+          <>
+            <RubricViewer rubric={rubric} />
+            {isTeacherOrOwner && (
+              <div className="flex items-center justify-end gap-2">
+                {rubric.sourceTemplateId && (
+                  <button
+                    onClick={handleExportAttached}
+                    className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    Экспорт рубрики
+                  </button>
+                )}
+                <button
+                  onClick={handleDetach}
+                  disabled={detachMutation.isPending}
+                  className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                >
+                  {detachMutation.isPending ? 'Открепление...' : 'Открепить рубрику'}
+                </button>
+              </div>
+            )}
+            {detachMutation.errorMessage && (
+              <p className="text-right text-sm text-red-600">{detachMutation.errorMessage}</p>
+            )}
+          </>
+        ) : isTeacherOrOwner ? (
+          <div className="flex items-center justify-between rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
+            <p className="text-sm text-gray-600">
+              К заданию не привязана рубрика — используется обычная числовая оценка 0–100.
+            </p>
+            <button
+              onClick={() => setShowAttachModal(true)}
+              className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+            >
+              Прикрепить рубрику
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      {showAttachModal && classData && (
+        <AttachRubricModal
+          assignmentId={assignmentId!}
+          classId={classData.id}
+          onClose={() => setShowAttachModal(false)}
+        />
+      )}
 
       {isTeacherOrOwner && (
         <div className="mb-6">
