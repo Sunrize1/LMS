@@ -298,6 +298,7 @@ export interface MyAssessmentCriterionDto {
 
 export interface MyAssessmentDto {
   assignmentId: string
+  classId?: string
   assignmentTitle: string
   assessmentId: string
   finalScore: string

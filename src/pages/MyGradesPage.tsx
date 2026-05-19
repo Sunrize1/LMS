@@ -134,14 +134,16 @@ function AssessmentCard({
             })}
           </ul>
 
-          <div className="mt-3 text-right">
-            <Link
-              to={`/classes/${data.assignmentId}`}
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
-            >
-              К заданию →
-            </Link>
-          </div>
+          {data.classId && (
+            <div className="mt-3 text-right">
+              <Link
+                to={`/classes/${data.classId}/assignments/${data.assignmentId}`}
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+              >
+                К заданию →
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </div>
