@@ -20,6 +20,8 @@ const TeamListPage = lazy(() => import('@/pages/TeamListPage'))
 const TeamDetailPage = lazy(() => import('@/pages/TeamDetailPage'))
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
 const JoinPage = lazy(() => import('@/pages/JoinPage'))
+const RubricTemplatesPage = lazy(() => import('@/pages/RubricTemplatesPage'))
+const RubricTemplateEditorPage = lazy(() => import('@/pages/RubricTemplateEditorPage'))
 
 function LazyPage({ children }: { children: React.ReactNode }) {
   return (
@@ -145,6 +147,30 @@ export const router = createBrowserRouter([
             element: (
               <LazyPage>
                 <SubmissionDetailPage />
+              </LazyPage>
+            ),
+          },
+          {
+            path: '/classes/:classId/rubric-templates',
+            element: (
+              <LazyPage>
+                <RubricTemplatesPage />
+              </LazyPage>
+            ),
+          },
+          {
+            path: '/classes/:classId/rubric-templates/new',
+            element: (
+              <LazyPage>
+                <RubricTemplateEditorPage />
+              </LazyPage>
+            ),
+          },
+          {
+            path: '/classes/:classId/rubric-templates/:templateId',
+            element: (
+              <LazyPage>
+                <RubricTemplateEditorPage />
               </LazyPage>
             ),
           },

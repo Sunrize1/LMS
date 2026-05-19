@@ -33,6 +33,14 @@ export function ClassToolbar({ classData }: ClassToolbarProps) {
         </Link>
         {isOwnerOrTeacher && (
           <Link
+            to={`/classes/${classData.id}/rubric-templates`}
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+          >
+            Рубрики
+          </Link>
+        )}
+        {isOwnerOrTeacher && (
+          <Link
             to={`/classes/${classData.id}/settings`}
             className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
           >
