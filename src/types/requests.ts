@@ -135,6 +135,7 @@ export interface CriterionScoreInput {
 
 export interface CreateAssessmentRequest {
   submissionId?: string | null
+  teamId?: string | null
   teamGradeId?: string | null
   scores: CriterionScoreInput[]
 }

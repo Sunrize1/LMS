@@ -9,8 +9,10 @@ import { useClassQuery } from '@/features/classes/hooks/useClassQuery'
 import { CommentsSection } from '@/features/comments/CommentsSection'
 import { TeamGradeWidget } from '@/features/team-grades/TeamGradeWidget'
 import { MyTeamGrade } from '@/features/team-grades/MyTeamGrade'
+import { useTeamGradesQuery } from '@/features/team-grades/hooks/useTeamGradesQuery'
 import { RubricViewer } from '@/features/rubric/RubricViewer'
 import { AttachRubricModal } from '@/features/rubric/AttachRubricModal'
+import { TeamRubricWidget } from '@/features/rubric/TeamRubricWidget'
 import { useAssignmentRubricQuery } from '@/features/rubric/hooks/useAssignmentRubricQuery'
 import { useDetachRubricMutation } from '@/features/rubric/hooks/useRubricAttachmentMutations'
 import { apiRubricTemplates } from '@/services/apiRubricTemplates'
@@ -61,8 +63,13 @@ export default function AssignmentDetailPage() {
   const [file, setFile] = useState<File | null>(null)
 
   const { data: rubric } = useAssignmentRubricQuery(assignmentId!, !classLoading)
+  const { data: teamGradesPage } = useTeamGradesQuery(assignmentId!)
   const detachMutation = useDetachRubricMutation(assignmentId!)
   const [showAttachModal, setShowAttachModal] = useState(false)
+
+  const hasIndividualGrades = !!allSubmissions?.some((s) => s.grade !== null)
+  const hasTeamGrades = (teamGradesPage?.content?.length ?? 0) > 0
+  const hasAnyGrades = hasIndividualGrades || hasTeamGrades
 
   const handleDetach = () => {
     if (window.confirm('Открепить рубрику? Это запрещено, если уже есть оценивания.')) {
@@ -164,13 +171,15 @@ export default function AssignmentDetailPage() {
                     Экспорт рубрики
                   </button>
                 )}
-                <button
-                  onClick={handleDetach}
-                  disabled={detachMutation.isPending}
-                  className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
-                >
-                  {detachMutation.isPending ? 'Открепление...' : 'Открепить рубрику'}
-                </button>
+                {!hasAnyGrades && (
+                  <button
+                    onClick={handleDetach}
+                    disabled={detachMutation.isPending}
+                    className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                  >
+                    {detachMutation.isPending ? 'Открепление...' : 'Открепить рубрику'}
+                  </button>
+                )}
               </div>
             )}
             {detachMutation.errorMessage && (
@@ -182,12 +191,14 @@ export default function AssignmentDetailPage() {
             <p className="text-sm text-gray-600">
               К заданию не привязана рубрика — используется обычная числовая оценка 0–100.
             </p>
-            <button
-              onClick={() => setShowAttachModal(true)}
-              className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
-            >
-              Прикрепить рубрику
-            </button>
+            {!hasAnyGrades && (
+              <button
+                onClick={() => setShowAttachModal(true)}
+                className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+              >
+                Прикрепить рубрику
+              </button>
+            )}
           </div>
         ) : null}
       </div>
@@ -346,19 +357,15 @@ export default function AssignmentDetailPage() {
       )}
 
       {assignment.isTeamBased && isTeacherOrOwner && (
-        <>
-          {rubric && (
-            <div className="mb-3 rounded-md border border-indigo-200 bg-indigo-50 p-3 text-sm text-indigo-800">
-              К заданию прикреплена рубрика. Командные оценки выставляются по рубрике через
-              карточку команды.
-            </div>
-          )}
+        rubric ? (
+          <TeamRubricWidget rubric={rubric} assignmentId={assignmentId!} classId={classId!} />
+        ) : (
           <TeamGradeWidget
             assignmentId={assignmentId!}
             classId={classId!}
             isOwnerOrTeacher={isTeacherOrOwner}
           />
-        </>
+        )
       )}
 
       {assignment.isTeamBased && !isTeacherOrOwner && (

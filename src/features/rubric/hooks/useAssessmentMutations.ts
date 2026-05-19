@@ -7,10 +7,24 @@ import type { CreateAssessmentRequest, UpdateAssessmentRequest } from '@/types/r
 interface CreateOpts {
   assignmentId: string
   submissionId?: string
+  teamId?: string
   teamGradeId?: string
 }
 
-export function useCreateAssessmentMutation({ assignmentId, submissionId, teamGradeId }: CreateOpts) {
+function invalidateForTeam(
+  queryClient: ReturnType<typeof useQueryClient>,
+  assignmentId: string,
+) {
+  queryClient.invalidateQueries({ queryKey: ['teamGrades', assignmentId] })
+  queryClient.invalidateQueries({ queryKey: ['assignmentAssessments', assignmentId] })
+}
+
+export function useCreateAssessmentMutation({
+  assignmentId,
+  submissionId,
+  teamId,
+  teamGradeId,
+}: CreateOpts) {
   const queryClient = useQueryClient()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const mutation = useMutation({
@@ -28,8 +42,8 @@ export function useCreateAssessmentMutation({ assignmentId, submissionId, teamGr
         queryClient.invalidateQueries({
           queryKey: ['assessment', 'teamGrade', teamGradeId],
         })
-        queryClient.invalidateQueries({ queryKey: ['teamGrades', assignmentId] })
       }
+      if (teamGradeId || teamId) invalidateForTeam(queryClient, assignmentId)
     },
     onError: (error) => setErrorMessage(handleApiError(error)),
   })
@@ -54,8 +68,9 @@ export function useUpdateAssessmentMutation(opts: CreateOpts & { assessmentId: s
         queryClient.invalidateQueries({
           queryKey: ['assessment', 'teamGrade', opts.teamGradeId],
         })
-        queryClient.invalidateQueries({ queryKey: ['teamGrades', opts.assignmentId] })
       }
+      if (opts.teamGradeId || opts.teamId)
+        invalidateForTeam(queryClient, opts.assignmentId)
     },
     onError: (error) => setErrorMessage(handleApiError(error)),
   })
@@ -79,8 +94,9 @@ export function useDeleteAssessmentMutation(opts: CreateOpts) {
         queryClient.invalidateQueries({
           queryKey: ['assessment', 'teamGrade', opts.teamGradeId],
         })
-        queryClient.invalidateQueries({ queryKey: ['teamGrades', opts.assignmentId] })
       }
+      if (opts.teamGradeId || opts.teamId)
+        invalidateForTeam(queryClient, opts.assignmentId)
     },
     onError: (error) => setErrorMessage(handleApiError(error)),
   })

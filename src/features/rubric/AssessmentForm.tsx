@@ -13,6 +13,7 @@ interface Props {
   rubric: RubricDto
   assignmentId: string
   submissionId?: string
+  teamId?: string
   teamGradeId?: string
   existing?: AssessmentDto | null
   onSaved?: () => void
@@ -61,6 +62,7 @@ export function AssessmentForm({
   rubric,
   assignmentId,
   submissionId,
+  teamId,
   teamGradeId,
   existing,
   onSaved,
@@ -69,14 +71,25 @@ export function AssessmentForm({
     existing ? hydrateFrom(rubric, existing) : emptyScoresFor(rubric),
   )
 
-  const createMut = useCreateAssessmentMutation({ assignmentId, submissionId, teamGradeId })
+  const createMut = useCreateAssessmentMutation({
+    assignmentId,
+    submissionId,
+    teamId,
+    teamGradeId,
+  })
   const updateMut = useUpdateAssessmentMutation({
     assignmentId,
     submissionId,
+    teamId,
     teamGradeId,
     assessmentId: existing?.id ?? '',
   })
-  const deleteMut = useDeleteAssessmentMutation({ assignmentId, submissionId, teamGradeId })
+  const deleteMut = useDeleteAssessmentMutation({
+    assignmentId,
+    submissionId,
+    teamId,
+    teamGradeId,
+  })
 
   const scoreList = useMemo(() => rubric.criteria.map((c) => scores[c.id]), [rubric, scores])
   const calc = useMemo(() => calculate(rubric, scoreList), [rubric, scoreList])
@@ -103,6 +116,7 @@ export function AssessmentForm({
       createMut.mutate(
         {
           submissionId: submissionId ?? null,
+          teamId: teamId ?? null,
           teamGradeId: teamGradeId ?? null,
           ...payload,
         },
