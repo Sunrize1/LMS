@@ -30,7 +30,7 @@ describe('AssignmentCard', () => {
 
   it('should display submission status badge', () => {
     renderCard()
-    expect(screen.getByText('NOT_SUBMITTED')).toBeInTheDocument()
+    expect(screen.getByText('Не сдано')).toBeInTheDocument()
   })
 
   it('should link to assignment detail page', () => {
@@ -41,6 +41,6 @@ describe('AssignmentCard', () => {
 
   it('should display GRADED status', () => {
     renderCard({ ...mockAssignment, submissionStatus: 'GRADED' })
-    expect(screen.getByText('GRADED')).toBeInTheDocument()
+    expect(screen.getByText('Оценено')).toBeInTheDocument()
   })
 })

@@ -7,6 +7,12 @@ const statusStyles: Record<SubmissionStatus, string> = {
   GRADED: 'bg-green-100 text-green-800',
 }
 
+const statusLabels: Record<SubmissionStatus, string> = {
+  NOT_SUBMITTED: 'Не сдано',
+  SUBMITTED: 'Сдано',
+  GRADED: 'Оценено',
+}
+
 interface StatusBadgeProps {
   status: SubmissionStatus
   className?: string
@@ -21,7 +27,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
         className,
       )}
     >
-      {status}
+      {statusLabels[status]}
     </span>
   )
 }
