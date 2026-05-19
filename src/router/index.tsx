@@ -22,6 +22,7 @@ const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
 const JoinPage = lazy(() => import('@/pages/JoinPage'))
 const RubricTemplatesPage = lazy(() => import('@/pages/RubricTemplatesPage'))
 const RubricTemplateEditorPage = lazy(() => import('@/pages/RubricTemplateEditorPage'))
+const MyGradesPage = lazy(() => import('@/pages/MyGradesPage'))
 
 function LazyPage({ children }: { children: React.ReactNode }) {
   return (
@@ -171,6 +172,14 @@ export const router = createBrowserRouter([
             element: (
               <LazyPage>
                 <RubricTemplateEditorPage />
+              </LazyPage>
+            ),
+          },
+          {
+            path: '/me/grades',
+            element: (
+              <LazyPage>
+                <MyGradesPage />
               </LazyPage>
             ),
           },

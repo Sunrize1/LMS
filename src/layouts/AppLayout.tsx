@@ -28,6 +28,16 @@ export function AppLayout() {
                 Классы
               </Link>
               <Link
+                to="/me/grades"
+                className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+                  isActive('/me/grades')
+                    ? 'bg-white/20 text-white'
+                    : 'text-indigo-100 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                Мои оценки
+              </Link>
+              <Link
                 to="/profile"
                 className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
                   isActive('/profile')
