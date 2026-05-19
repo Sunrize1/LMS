@@ -195,6 +195,130 @@ export interface Page<T> {
   empty: boolean
 }
 
+// ── Rubric ──────────────────────────────────────
+export type CriterionKind = 'BOOLEAN' | 'PERCENT' | 'SCORE'
+export type CriterionRole = 'PRIMARY' | 'BONUS'
+
+export interface CriterionTemplateDto {
+  id: string
+  ordinal: number
+  title: string
+  description: string | null
+  kind: CriterionKind
+  role: CriterionRole
+  maxPoints: string | null
+  maxCoefficient: string | null
+  scoreMin: string | null
+  scoreMax: string | null
+}
+
+export interface RubricTemplateDto {
+  id: string
+  classId: string
+  name: string
+  description: string | null
+  totalMaxPoints: string
+  allowOvercap: boolean
+  createdBy: string
+  createdAt: string
+  updatedAt: string
+  criteria: CriterionTemplateDto[]
+}
+
+export interface RubricTemplateShortDto {
+  id: string
+  name: string
+  totalMaxPoints: string
+  criteriaCount: number
+  createdAt: string
+}
+
+export interface CriterionDto {
+  id: string
+  ordinal: number
+  title: string
+  description: string | null
+  kind: CriterionKind
+  role: CriterionRole
+  maxPoints: string | null
+  maxCoefficient: string | null
+  scoreMin: string | null
+  scoreMax: string | null
+}
+
+export interface RubricDto {
+  id: string
+  assignmentId: string
+  sourceTemplateId: string | null
+  name: string
+  description: string | null
+  totalMaxPoints: string
+  allowOvercap: boolean
+  frozenAt: string
+  criteria: CriterionDto[]
+}
+
+export interface CriterionScoreDto {
+  id: string
+  criterionId: string
+  boolValue: boolean | null
+  percentValue: string | null
+  scoreValue: string | null
+  computedPoints: string
+  comment: string | null
+}
+
+export interface AssessmentDto {
+  id: string
+  rubricId: string
+  assignmentId: string
+  submissionId: string | null
+  teamGradeId: string | null
+  primarySum: string
+  bonusMultiplier: string
+  finalScore: string
+  finalScoreNormalized: number
+  gradedBy: string
+  gradedAt: string
+  scores: CriterionScoreDto[]
+}
+
+export interface MyAssessmentCriterionDto {
+  title: string
+  kind: CriterionKind
+  role: CriterionRole
+  value: string | boolean | null
+  maxPoints: string | null
+  maxCoefficient: string | null
+  scoreMin: string | null
+  scoreMax: string | null
+  computedPoints: string
+  comment: string | null
+}
+
+export interface MyAssessmentDto {
+  assignmentId: string
+  assignmentTitle: string
+  assessmentId: string
+  finalScore: string
+  totalMaxPoints: string
+  finalScoreNormalized: number
+  criteria: MyAssessmentCriterionDto[]
+}
+
+export interface RubricExportPayload {
+  $schema?: string
+  version: string
+  exportedAt?: string
+  rubric: {
+    name: string
+    description: string | null
+    totalMaxPoints: string
+    allowOvercap: boolean
+    criteria: Array<Omit<CriterionTemplateDto, 'id'>>
+  }
+}
+
 // ── Error ───────────────────────────────────────
 export interface ApiError {
   status: number
