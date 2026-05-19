@@ -231,7 +231,7 @@ export default function AssignmentDetailPage() {
                 <Link
                   key={sub.id}
                   to={`/submissions/${sub.id}`}
-                  state={sub}
+                  state={{ ...sub, assignmentId }}
                   className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 transition hover:border-indigo-200 hover:shadow-md"
                 >
                   <span className="font-medium text-gray-900">{sub.studentName}</span>
@@ -346,11 +346,19 @@ export default function AssignmentDetailPage() {
       )}
 
       {assignment.isTeamBased && isTeacherOrOwner && (
-        <TeamGradeWidget
-          assignmentId={assignmentId!}
-          classId={classId!}
-          isOwnerOrTeacher={isTeacherOrOwner}
-        />
+        <>
+          {rubric && (
+            <div className="mb-3 rounded-md border border-indigo-200 bg-indigo-50 p-3 text-sm text-indigo-800">
+              К заданию прикреплена рубрика. Командные оценки выставляются по рубрике через
+              карточку команды.
+            </div>
+          )}
+          <TeamGradeWidget
+            assignmentId={assignmentId!}
+            classId={classId!}
+            isOwnerOrTeacher={isTeacherOrOwner}
+          />
+        </>
       )}
 
       {assignment.isTeamBased && !isTeacherOrOwner && (

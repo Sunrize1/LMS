@@ -1,16 +1,29 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useGradeMutation } from '@/features/submissions/hooks/useGradeMutation'
+import { useAssignmentRubricQuery } from '@/features/rubric/hooks/useAssignmentRubricQuery'
+import { useSubmissionAssessmentQuery } from '@/features/rubric/hooks/useAssessmentQueries'
+import { AssessmentForm } from '@/features/rubric/AssessmentForm'
+import { AssessmentView } from '@/features/rubric/AssessmentView'
+import { RubricViewer } from '@/features/rubric/RubricViewer'
 import type { SubmissionDto } from '@/types/dto'
 import { toAbsoluteFileUrl } from '@/utils/fileUrl'
+
+interface LocationState extends SubmissionDto {
+  assignmentId?: string
+}
 
 export default function SubmissionDetailPage() {
   const location = useLocation()
   const navigate = useNavigate()
-  const submission = location.state as SubmissionDto | undefined
+  const submission = location.state as LocationState | undefined
+  const assignmentId = submission?.assignmentId
   const gradeMutation = useGradeMutation(submission?.id ?? '')
   const [grade, setGrade] = useState('')
   const [isEditing, setIsEditing] = useState(false)
+
+  const { data: rubric } = useAssignmentRubricQuery(assignmentId ?? '', !!assignmentId)
+  const { data: assessment } = useSubmissionAssessmentQuery(submission?.id, !!rubric)
 
   if (!submission) {
     return (
@@ -33,6 +46,8 @@ export default function SubmissionDetailPage() {
       gradeMutation.mutate({ grade: gradeNum })
     }
   }
+
+  const hasRubric = !!rubric
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -70,7 +85,34 @@ export default function SubmissionDetailPage() {
         </p>
       </div>
 
-      {submission.grade !== null && !isEditing ? (
+      {hasRubric && rubric ? (
+        <div className="space-y-6">
+          {assessment && !isEditing ? (
+            <>
+              <AssessmentView rubric={rubric} assessment={assessment} />
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="rounded-lg border border-indigo-200 px-3 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-50"
+                >
+                  Изменить оценивание
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <RubricViewer rubric={rubric} />
+              <AssessmentForm
+                rubric={rubric}
+                assignmentId={assignmentId!}
+                submissionId={submission.id}
+                existing={assessment}
+                onSaved={() => setIsEditing(false)}
+              />
+            </>
+          )}
+        </div>
+      ) : submission.grade !== null && !isEditing ? (
         <div className="rounded-xl border border-green-200 bg-green-50 p-4">
           <div className="flex items-center justify-between">
             <p className="text-lg font-medium text-green-700">Оценка: {submission.grade}</p>
